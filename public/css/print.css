@@ -1,0 +1,47 @@
+/* SYNAPSE 2027 Print Stylesheet */
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide entire website navigation, hero, footer, and buttons */
+  header, footer, nav, section, .no-print, button, .modal-backdrop {
+    display: none !important;
+  }
+
+  /* Only show the ticket container */
+  #printable-pass-wrapper {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  .holo-card-pass {
+    border: 3px solid #000000 !important;
+    box-shadow: none !important;
+    max-width: 500px !important;
+    margin: 0 auto !important;
+    page-break-inside: avoid !important;
+  }
+
+  .holo-card-pass::after {
+    display: none !important; /* Disable animated holographic shimmer during print */
+  }
+
+  .laser-line {
+    display: none !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+}

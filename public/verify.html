@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gate Scanner & Pass Verifier | SYNAPSE 2027</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="bg-[#FCF9F3] text-[#111111] font-sans antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="bg-[#111111] text-[#FCF9F3] border-b-2 border-black px-6 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-3 rounded-full bg-[#C90016] animate-pulse"></span>
+        <div>
+          <h1 class="font-anton text-2xl uppercase tracking-wider leading-none">SYNAPSE 2027</h1>
+          <div class="font-mono text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">GATE SECURITY & VERIFICATION TERMINAL</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/" class="font-mono text-xs text-gray-300 hover:text-white uppercase flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">home</span>
+          <span>MAIN SITE</span>
+        </a>
+        <a href="/admin.html" class="font-mono text-xs text-gray-300 hover:text-white uppercase flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
+          <span>ORGANIZER ADMIN</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-5xl mx-auto w-full px-4 py-8 flex-1">
+    
+    <!-- Top System Telemetry -->
+    <div class="bg-[#F0EEE8] border-brutal p-4 mb-6 flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
+      <div>
+        <span class="text-gray-500 uppercase">VENUE:</span> <strong>IILM UNIVERSITY, SECTOR 53 GURUGRAM</strong>
+      </div>
+      <div>
+        <span class="text-gray-500 uppercase">GATE STATION:</span> <strong>MAIN GATE 01</strong>
+      </div>
+      <div>
+        <span class="text-gray-500 uppercase">OPERATOR:</span> <strong>VERVE GATE COORDINATOR</strong>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      
+      <!-- Left Column: Scanner & Input -->
+      <div class="md:col-span-6 space-y-6">
+        
+        <!-- Camera Scanner Card -->
+        <div class="bg-white border-brutal brutalist-shadow p-6">
+          <div class="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
+            <h2 class="font-anton text-xl uppercase tracking-wide">CAMERA QR SCANNER</h2>
+            <span class="font-mono text-[11px] bg-red-100 text-red-700 px-2 py-0.5 font-bold uppercase">[OPTICAL SENSOR]</span>
+          </div>
+
+          <div id="reader" class="w-full bg-gray-100 border border-gray-300 overflow-hidden mb-4 rounded-none min-h-[260px] flex items-center justify-center">
+            <span class="font-mono text-xs text-gray-500">[CAMERA SCANNER INITIALIZING...]</span>
+          </div>
+
+          <div class="flex gap-2">
+            <button id="startScanBtn" class="flex-1 py-2.5 bg-[#111111] text-white font-mono text-xs uppercase font-bold hover:bg-[#C90016] transition-colors border-brutal">
+              START CAMERA
+            </button>
+            <button id="stopScanBtn" class="px-4 py-2.5 bg-gray-200 text-black font-mono text-xs uppercase font-bold hover:bg-gray-300 transition-colors border-brutal hidden">
+              STOP
+            </button>
+          </div>
+        </div>
+
+        <!-- Manual Ticket Code Input Card -->
+        <div class="bg-white border-brutal brutalist-shadow p-6">
+          <h2 class="font-anton text-xl uppercase tracking-wide mb-2">MANUAL TICKET CODE ENTRY</h2>
+          <p class="font-mono text-xs text-gray-500 mb-4">If student cannot present physical or digital QR code:</p>
+          
+          <form id="manualVerifyForm" class="flex gap-2">
+            <input type="text" id="manualTicketInput" placeholder="SYN27-XXXXXX" class="flex-1 bg-gray-50 border-brutal px-3 py-2 font-mono text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-[#C90016]" required />
+            <button type="submit" class="px-5 py-2 bg-[#C90016] text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-red-800 transition-all brutalist-shadow-sm">
+              VERIFY
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Verification Result Card -->
+      <div class="md:col-span-6">
+        <div id="verificationResultCard" class="bg-white border-brutal-thick brutalist-shadow-lg p-6 min-h-[420px] flex flex-col justify-between">
+          
+          <div id="resultPlaceholder" class="flex-1 flex flex-col items-center justify-center text-center py-16 text-gray-400">
+            <span class="material-symbols-outlined text-6xl mb-3 text-gray-300">qr_code_scanner</span>
+            <div class="font-anton text-2xl uppercase tracking-wider text-gray-400">READY FOR SCAN</div>
+            <div class="font-mono text-xs text-gray-400 mt-1">Scan attendee QR pass or enter ticket serial to verify gate entry.</div>
+          </div>
+
+          <div id="resultContent" class="hidden space-y-4">
+            <!-- Populated dynamically via JS -->
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#F0EEE8] border-t-2 border-black py-4 px-6 font-mono text-xs text-gray-600 text-center">
+    INITIATED BY <strong>VERVE CLUB, IILM UNIVERSITY</strong> • <strong>SITE BY MAYANK</strong> • SYNAPSE 2027 ENGINE
+  </footer>
+
+  <script>
+    let html5QrCode = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if ticket query parameter is present in URL (e.g. ?ticket=SYN27-XXXX)
+      const urlParams = new URLSearchParams(window.location.search);
+      const prefillTicket = urlParams.get('ticket');
+      if (prefillTicket) {
+        document.getElementById('manualTicketInput').value = prefillTicket;
+        verifyTicketCode(prefillTicket);
+      }
+
+      // Manual form handler
+      document.getElementById('manualVerifyForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const code = document.getElementById('manualTicketInput').value.trim();
+        if (code) verifyTicketCode(code);
+      });
+
+      // Scanner buttons
+      document.getElementById('startScanBtn').addEventListener('click', startScanner);
+      document.getElementById('stopScanBtn').addEventListener('click', stopScanner);
+    });
+
+    async function verifyTicketCode(rawCode) {
+      // Extract ticket ID if full URL was scanned
+      let ticketId = rawCode;
+      if (rawCode.includes('ticket='')) {
+        const parts = rawCode.split('ticket=');
+        ticketId = decodeURIComponent(parts[1].split('&')[0]);
+      }
+
+      showLoadingResult(ticketId);
+
+      try {
+        const response = await fetch(`/api/verify/${encodeURIComponent(ticketId)}`);
+        const data = await response.json();
+        renderVerificationResult(data, ticketId);
+      } catch (err) {
+        renderErrorResult('Network error verifying ticket with server.');
+      }
+    }
+
+    function showLoadingResult(ticketId) {
+      document.getElementById('resultPlaceholder').classList.add('hidden');
+      const content = document.getElementById('resultContent');
+      content.classList.remove('hidden');
+      content.innerHTML = `
+        <div class="py-12 text-center font-mono text-sm text-gray-600">
+          <div class="w-8 h-8 border-4 border-[#C90016] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          [VERIFYING TICKET: ${ticketId} WITH SYNAPSE DATABASE...]
+        </div>
+      `;
+    }
+
+    function renderVerificationResult(data, ticketId) {
+      const content = document.getElementById('resultContent');
+      document.getElementById('resultPlaceholder').classList.add('hidden');
+      content.classList.remove('hidden');
+
+      if (!data.valid) {
+        content.innerHTML = `
+          <div class="bg-red-50 border-2 border-red-600 p-6 text-center">
+            <span class="material-symbols-outlined text-5xl text-red-600 mb-2">cancel</span>
+            <div class="font-anton text-3xl uppercase tracking-wider text-red-600">ACCESS DENIED</div>
+            <div class="font-mono text-xs font-bold text-red-800 mt-2 bg-red-100 py-1 px-2 border border-red-300">
+              [REASON: ${data.reason || 'Invalid or unconfirmed ticket'}]
+            </div>
+            <div class="font-mono text-xs text-gray-600 mt-3">Scanned Code: ${ticketId}</div>
+          </div>
+        `;
+        return;
+      }
+
+      const t = data.ticket;
+      const isAlreadyCheckedIn = data.alreadyCheckedIn;
+
+      content.innerHTML = `
+        <div class="${isAlreadyCheckedIn ? 'bg-amber-50 border-amber-600' : 'bg-green-50 border-green-600'} border-2 p-5 text-center mb-4">
+          <span class="material-symbols-outlined text-5xl ${isAlreadyCheckedIn ? 'text-amber-600' : 'text-green-600'} mb-1">
+            ${isAlreadyCheckedIn ? 'warning' : 'check_circle'}
+          </span>
+          <div class="font-anton text-3xl uppercase tracking-wider ${isAlreadyCheckedIn ? 'text-amber-700' : 'text-green-700'}">
+            ${isAlreadyCheckedIn ? 'ALREADY ADMITTED' : 'ADMISSION AUTHORIZED'}
+          </div>
+          ${isAlreadyCheckedIn ? `
+            <div class="font-mono text-xs text-amber-900 mt-1 bg-amber-100 p-1.5 border border-amber-300">
+              WARNING: This pass was previously scanned at <strong>${new Date(data.lastCheckin.scanned_at).toLocaleTimeString()}</strong> at <strong>${data.lastCheckin.gate_name}</strong>.
+            </div>
+          ` : `
+            <div class="font-mono text-xs text-green-900 mt-1 font-bold">
+              VALID PASS // STUDENT VERIFIED FOR CAMPUS ENTRY
+            </div>
+          `}
+        </div>
+
+        <div class="border-brutal bg-[#FCF9F3] p-4 space-y-2 font-mono text-xs">
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-500">TICKET SERIAL:</span>
+            <strong class="text-[#C90016] text-sm">${t.ticket_id}</strong>
+          </div>
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-500">STUDENT NAME:</span>
+            <strong class="uppercase text-sm">${t.full_name}</strong>
+          </div>
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-500">COLLEGE:</span>
+            <strong class="uppercase truncate max-w-[220px]">${t.college}</strong>
+          </div>
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-500">EVENT / TRACK:</span>
+            <strong>${t.event_name} [${t.track.toUpperCase()}]</strong>
+          </div>
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-500">ROLE:</span>
+            <strong>${t.role}</strong>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">FEE / PAYMENT:</span>
+            <strong>₹${t.amount} • ${t.payment_status} (${t.payment_method})</strong>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          ${isAlreadyCheckedIn ? `
+            <button onclick="recordCheckinAction('${t.ticket_id}', true)" class="w-full py-3 bg-amber-600 text-white font-mono text-xs font-bold uppercase tracking-wider border-brutal hover:bg-amber-700 transition-all brutalist-shadow-sm">
+              OVERRIDE & RE-LOG ADMISSION
+            </button>
+          ` : `
+            <button onclick="recordCheckinAction('${t.ticket_id}', false)" class="w-full py-3 bg-[#111111] text-white font-mono text-xs font-bold uppercase tracking-wider border-brutal hover:bg-[#C90016] transition-all brutalist-shadow">
+              CONFIRM PHYSICAL GATE CHECK-IN
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    async function recordCheckinAction(ticketId, isOverride) {
+      try {
+        const response = await fetch(`/api/checkin/${encodeURIComponent(ticketId)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            gateName: 'Main Gate 01 (IILM Gurugram)',
+            scannedBy: 'VERVE Gate Coordinator'
+          })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Gate admission successfully recorded in database!');
+          verifyTicketCode(ticketId);
+        } else {
+          alert('Check-in failed: ' + result.error);
+        }
+      } catch (err) {
+        alert('Check-in recording network error.');
+      }
+    }
+
+    function renderErrorResult(msg) {
+      const content = document.getElementById('resultContent');
+      content.innerHTML = `
+        <div class="bg-red-50 border-2 border-red-600 p-6 text-center">
+          <div class="font-anton text-2xl uppercase text-red-600">SYSTEM ERROR</div>
+          <div class="font-mono text-xs text-red-800 mt-2">${msg}</div>
+        </div>
+      `;
+    }
+
+    function startScanner() {
+      const qrRegion = document.getElementById('reader');
+      qrRegion.innerHTML = '';
+      html5QrCode = new Html5Qrcode('reader');
+
+      html5QrCode.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 220, height: 220 } },
+        (decodedText) => {
+          verifyTicketCode(decodedText);
+          stopScanner();
+        },
+        (errorMessage) => {}
+      ).then(() => {
+        document.getElementById('startScanBtn').classList.add('hidden');
+        document.getElementById('stopScanBtn').classList.remove('hidden');
+      }).catch(err => {
+        alert('Unable to access camera. Please enter ticket ID manually.');
+      });
+    }
+
+    function stopScanner() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          document.getElementById('startScanBtn').classList.remove('hidden');
+          document.getElementById('stopScanBtn').classList.add('hidden');
+        }).catch(err => {});
+      }
+    }
+  </script>
+</body>
+</html>

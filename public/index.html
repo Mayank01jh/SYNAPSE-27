@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SYNAPSE 2027 | Flagship Tech Fest — IILM University Gurugram</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#C90016",
+            "primary-hover": "#9C000E",
+            "canvas": "#FCF9F3",
+            "canvas-muted": "#F0EEE8",
+            "on-surface": "#111111",
+            "secondary": "#5F5E5E",
+            "surface-variant": "#E5E2DC"
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/print.css" />
+</head>
+<body class="bg-canvas text-on-surface antialiased selection:bg-primary selection:text-white">
+
+  <!-- ================= HEADER & NAV ================= -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-[#F5F2EC] border-b-2 border-on-surface">
+    <div class="h-20 w-full px-4 md:px-8 flex items-center justify-between gap-4">
+      
+      <!-- Brand & Club Title -->
+      <a href="#hero" class="flex items-center gap-3 shrink-0">
+        <div class="w-10 h-10 bg-primary flex items-center justify-center text-white font-anton text-2xl border-brutal brutalist-shadow-sm">
+          S
+        </div>
+        <div class="flex flex-col border-l-2 border-surface-variant pl-3">
+          <span class="font-anton text-xl uppercase tracking-wider text-on-surface leading-none">SYNAPSE 2027</span>
+          <span class="font-mono text-[10px] uppercase text-secondary tracking-widest mt-0.5">VERVE CLUB • IILM UNIVERSITY</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden xl:flex items-center gap-6 font-mono text-xs uppercase tracking-wider">
+        <a class="nav-link hover:text-primary transition-colors py-1" href="#hero">Home</a>
+        <a class="nav-link hover:text-primary transition-colors py-1" href="#about">About</a>
+        <a class="nav-link hover:text-primary transition-colors py-1" href="#tracks">Tracks</a>
+        <a class="nav-link hover:text-primary transition-colors py-1" href="#events">Events</a>
+        <a class="nav-link hover:text-primary transition-colors py-1" href="#schedule">Schedule</a>
+        <a class="nav-link hover:text-primary transition-colors py-1" href="#arenas">Arenas</a>
+        <a class="nav-link hover:text-primary transition-colors py-1" href="#bollywood">Bollywood Night</a>
+        <a class="nav-link hover:text-primary transition-colors py-1" href="#faqs">FAQs</a>
+      </nav>
+
+      <!-- Right Header CTAs -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="hidden lg:flex items-center gap-2 border-brutal bg-white px-3 py-1.5 font-mono text-xs">
+          <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+          <span class="uppercase tracking-wider font-semibold">JANUARY 2027 • GURUGRAM</span>
+        </div>
+
+        <button id="viewSavedPassBtn" class="hidden px-3 py-2 bg-white text-on-surface font-mono text-xs uppercase font-bold border-brutal hover:bg-surface-variant transition-all brutalist-shadow-sm flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">confirmation_number</span>
+          <span class="hidden sm:inline">MY PASS</span>
+        </button>
+
+        <button onclick="openRegistrationModal()" class="px-4 py-2.5 bg-primary text-white font-space text-xs uppercase tracking-wider font-bold border-brutal brutalist-shadow hover:bg-primary-hover hover:brutalist-shadow-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">bolt</span>
+          <span>REGISTER NOW</span>
+        </button>
+
+        <!-- Mobile Menu Hamburger -->
+        <button id="mobileMenuBtn" class="xl:hidden w-10 h-10 border-brutal bg-white flex items-center justify-center">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div id="mobileNavDrawer" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm xl:hidden">
+    <div class="w-4/5 max-w-sm h-full bg-[#FCF9F3] border-r-4 border-black p-6 flex flex-col justify-between overflow-y-auto">
+      <div>
+        <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-6">
+          <div class="font-anton text-2xl uppercase tracking-wider">SYNAPSE 2027</div>
+          <button id="closeMobileNav" class="w-8 h-8 border-brutal bg-white flex items-center justify-center">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <nav class="flex flex-col space-y-4 font-anton text-2xl uppercase tracking-wide">
+          <a href="#hero" class="hover:text-primary">Home</a>
+          <a href="#about" class="hover:text-primary">About VERVE</a>
+          <a href="#tracks" class="hover:text-primary">Tracks</a>
+          <a href="#events" class="hover:text-primary">Events (16+)</a>
+          <a href="#schedule" class="hover:text-primary">Schedule</a>
+          <a href="#arenas" class="hover:text-primary">Arenas & Showcase</a>
+          <a href="#bollywood" class="hover:text-primary">Bollywood Night</a>
+          <a href="#faqs" class="hover:text-primary">FAQs</a>
+          <a href="/verify.html" class="text-sm font-mono text-primary pt-4 border-t">Gate Scanner Portal</a>
+          <a href="/admin.html" class="text-sm font-mono text-secondary">Organizer Console</a>
+        </nav>
+      </div>
+      <div class="pt-6 border-t-2 border-black font-mono text-[11px] text-secondary">
+        INITIATED BY VERVE CLUB IILM<br />SITE BY MAYANK
+      </div>
+    </div>
+  </div>
+
+  <main class="w-full pt-20">
+
+    <!-- ================= SECTION 1: HERO & THREE.JS CANVAS ================= -->
+    <section id="hero" class="relative w-full border-b-2 border-on-surface bg-canvas overflow-hidden">
+      
+      <!-- Telemetry Strip -->
+      <div class="w-full bg-[#EBE8E2] border-b border-surface-variant px-4 md:px-8 py-2.5 flex flex-wrap items-center justify-between gap-y-2 font-mono text-xs">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></span>
+          <span class="font-bold tracking-widest text-primary">[SYS // VERVE-SYN27]</span>
+          <span class="hidden sm:inline text-secondary">|</span>
+          <span class="hidden sm:inline uppercase text-secondary">COORD: 28.4595° N, 77.0266° E</span>
+          <span class="text-secondary">|</span>
+          <span class="uppercase">SECTOR 53, GURUGRAM</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="bg-[#E5E2DC] px-2 py-0.5 uppercase font-semibold">STAGE: REGISTRATION OPEN</span>
+          <span class="text-primary font-bold hidden md:inline">EDITION 01 // 48-HOUR CONVERGENCE</span>
+        </div>
+      </div>
+
+      <!-- Main Hero Content -->
+      <div class="relative w-full px-4 md:px-8 pt-12 pb-20 min-h-[580px] flex flex-col justify-between z-10">
+        
+        <!-- Three.js 3D Kinetic Canvas Background -->
+        <div id="threejs-hero-container" class="absolute inset-0 w-full h-full pointer-events-none opacity-85 z-0"></div>
+
+        <!-- Upper Banner -->
+        <div class="relative z-10">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div class="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-secondary">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <span>IILM UNIVERSITY GURUGRAM — INITIATED BY VERVE CLUB</span>
+            </div>
+            <div class="font-mono text-xs text-primary bg-red-100 border border-primary px-3 py-1 uppercase tracking-widest font-bold self-start sm:self-auto">
+              [PROPOSED: JANUARY 2027 • 48 HOURS]
+            </div>
+          </div>
+
+          <!-- Colossal Title -->
+          <div class="my-4">
+            <h1 class="font-anton text-6xl sm:text-8xl md:text-9xl uppercase text-on-surface leading-none tracking-tight">
+              SYNAPSE <span class="text-primary">2027</span>
+            </h1>
+          </div>
+
+          <!-- Thematic Ribbon -->
+          <div class="bg-on-surface text-white px-4 py-3 border-brutal brutalist-shadow inline-block max-w-2xl mb-8">
+            <p class="font-space text-base sm:text-xl uppercase font-bold tracking-wider leading-snug m-0">
+              WHERE RADICAL SOFTWARE ENGINEERING, ROBOTIC GLADIATORS &amp; CULTURAL ENERGY COLLIDE.
+            </p>
+          </div>
+
+          <!-- Hero CTAs -->
+          <div class="flex flex-wrap gap-4 items-center">
+            <button onclick="openRegistrationModal()" class="px-8 py-4 bg-primary text-white font-anton text-xl uppercase tracking-wider border-brutal-thick brutalist-shadow-lg hover:bg-primary-hover hover:brutalist-shadow transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              <span>CLAIM OFFICIAL FEST PASS</span>
+            </button>
+            <a href="#events" class="px-6 py-4 bg-white text-on-surface font-mono text-xs uppercase tracking-wider font-bold border-brutal brutalist-shadow hover:bg-surface-variant transition-all flex items-center gap-2">
+              <span>EXPLORE ALL 16+ EVENTS</span>
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero Stats Ribbon -->
+        <div class="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-3 mt-12 bg-white/95 backdrop-blur-sm border-brutal brutalist-shadow p-4">
+          <div class="p-2 border-r border-surface-variant">
+            <div class="font-mono text-[10px] text-secondary uppercase font-bold">TOTAL PRIZE POOL</div>
+            <div class="font-anton text-2xl sm:text-3xl text-primary mt-1">₹5,00,000+</div>
+          </div>
+          <div class="p-2 border-r border-surface-variant">
+            <div class="font-mono text-[10px] text-secondary uppercase font-bold">CONVERGENCE DURATION</div>
+            <div class="font-anton text-2xl sm:text-3xl text-on-surface mt-1">48 HOURS NON-STOP</div>
+          </div>
+          <div class="p-2 border-r border-surface-variant">
+            <div class="font-mono text-[10px] text-secondary uppercase font-bold">ATTENDEES EXPECTED</div>
+            <div class="font-anton text-2xl sm:text-3xl text-on-surface mt-1">5,000+ STUDENTS</div>
+          </div>
+          <div class="p-2">
+            <div class="font-mono text-[10px] text-secondary uppercase font-bold">INSTITUTES PARTICIPATING</div>
+            <div class="font-anton text-2xl sm:text-3xl text-primary mt-1">30+ UNIVERSITIES</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Ticker Marquee Ribbon -->
+      <div class="w-full bg-[#111111] text-white py-3 overflow-hidden select-none border-t-2 border-on-surface">
+        <div class="animate-marquee font-anton text-lg uppercase tracking-wider flex items-center gap-8">
+          <span>/// 24-HOUR SOFTWARE HACKATHON</span>
+          <span class="text-primary">★</span>
+          <span>ROBOTECHTHON 30KG COMBAT ARENA</span>
+          <span class="text-primary">★</span>
+          <span>TECH TANK VENTURE SHOWCASE</span>
+          <span class="text-primary">★</span>
+          <span>BOLLYWOOD STAR CONCERT NIGHT</span>
+          <span class="text-primary">★</span>
+          <span>PROMPTHON AGENTIC AI</span>
+          <span class="text-primary">★</span>
+          <span>ESPORTS LAN CHAMPIONSHIP</span>
+          <span class="text-primary">★</span>
+          <span>MIDNIGHT CAPTURE THE FLAG</span>
+          <span class="text-primary">★</span>
+          <span>INITIATED BY VERVE CLUB IILM GURUGRAM</span>
+          <span class="text-primary">★</span>
+          <span>/// 24-HOUR SOFTWARE HACKATHON</span>
+          <span class="text-primary">★</span>
+          <span>ROBOTECHTHON 30KG COMBAT ARENA</span>
+          <span class="text-primary">★</span>
+          <span>TECH TANK VENTURE SHOWCASE</span>
+          <span class="text-primary">★</span>
+          <span>BOLLYWOOD STAR CONCERT NIGHT</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= SECTION 2: ABOUT VERVE & SYNAPSE ================= -->
+    <section id="about" class="w-full px-4 md:px-8 py-20 border-b-2 border-on-surface bg-canvas">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex items-center gap-2 mb-3">
+          <span class="font-mono text-xs font-bold text-primary uppercase">[INITIATION DISCLOSURE // 01]</span>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div class="lg:col-span-7">
+            <h2 class="font-anton text-4xl sm:text-6xl uppercase tracking-tight leading-none mb-6">
+              THE VERVE INITIATION: ARCHITECTING A NEW SUMMIT
+            </h2>
+            <p class="text-base sm:text-lg text-secondary leading-relaxed mb-6 font-normal">
+              <strong>SYNAPSE 2027</strong> was conceived and initiated by <strong>VERVE Club</strong>—the flagship technical, engineering, and cultural innovation society of <strong>IILM University, Gurugram</strong>. 
+            </p>
+            <p class="text-sm sm:text-base text-secondary leading-relaxed mb-8">
+              Rejecting generic campus symposiums, VERVE designed SYNAPSE as an uncompromising 48-hour collision point. Here, deep algorithmic craft meets hardware brute force, early-stage venture funding, and stadium-level musical celebrations.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="p-4 bg-surface-variant/40 border-brutal">
+                <div class="font-mono text-xs font-bold text-primary uppercase">[CORE HOST]</div>
+                <div class="font-anton text-xl uppercase mt-1">VERVE CLUB IILM</div>
+                <div class="font-mono text-xs text-secondary mt-1">Student Engineering &amp; Cultural Council</div>
+              </div>
+              <div class="p-4 bg-surface-variant/40 border-brutal">
+                <div class="font-mono text-xs font-bold text-primary uppercase">[VENUE PARTNER]</div>
+                <div class="font-anton text-xl uppercase mt-1">IILM GURUGRAM CAMPUS</div>
+                <div class="font-mono text-xs text-secondary mt-1">Sector 53, Golf Course Road</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: The 4 Pillars -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="p-5 bg-white border-brutal brutalist-shadow">
+              <div class="font-mono text-xs text-primary font-bold uppercase">[PILLAR 01]</div>
+              <h3 class="font-anton text-xl uppercase mt-1">RADICAL SOFTWARE</h3>
+              <p class="text-xs text-secondary mt-1 leading-relaxed">24 hours of autonomous AI agent development, zero-knowledge protocols, and distributed cloud computing.</p>
+            </div>
+            <div class="p-5 bg-white border-brutal brutalist-shadow">
+              <div class="font-mono text-xs text-primary font-bold uppercase">[PILLAR 02]</div>
+              <h3 class="font-anton text-xl uppercase mt-1">KINETIC HARDWARE</h3>
+              <p class="text-xs text-secondary mt-1 leading-relaxed">Full-contact 30kg combat robotics, autonomous obstacle rovers, and high-speed FPV drone racing.</p>
+            </div>
+            <div class="p-5 bg-white border-brutal brutalist-shadow">
+              <div class="font-mono text-xs text-primary font-bold uppercase">[PILLAR 03]</div>
+              <h3 class="font-anton text-xl uppercase mt-1">VENTURE CREATION</h3>
+              <p class="text-xs text-secondary mt-1 leading-relaxed">Live Tech Tank startup pitches evaluated by institutional seed investors with instant grants.</p>
+            </div>
+            <div class="p-5 bg-white border-brutal brutalist-shadow">
+              <div class="font-mono text-xs text-primary font-bold uppercase">[PILLAR 04]</div>
+              <h3 class="font-anton text-xl uppercase mt-1">CULTURAL RESONANCE</h3>
+              <p class="text-xs text-secondary mt-1 leading-relaxed">Celebrity star performer concert and open-air Bollywood EDM night to cap off the festival.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 3: TRACKS OVERVIEW ================= -->
+    <section id="tracks" class="w-full px-4 md:px-8 py-20 border-b-2 border-on-surface bg-[#F0EEE8]">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+          <div>
+            <span class="font-mono text-xs font-bold text-primary uppercase">[DISCIPLINARY TAXONOMY]</span>
+            <h2 class="font-anton text-4xl sm:text-6xl uppercase tracking-tight leading-none mt-2">
+              COMPETITION TRACKS
+            </h2>
+          </div>
+          <div class="font-mono text-xs text-secondary max-w-md">
+            FIVE DIVERGENT TRACKS DESIGNED FOR HACKERS, MECHATRONIC BUILDERS, STUDENT FOUNDERS, GAMERS &amp; MUSIC ENTHUSIASTS.
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div class="bg-white border-brutal brutalist-shadow p-5 flex flex-col justify-between">
+            <div>
+              <span class="font-mono text-xs font-bold text-primary uppercase">[TRACK 01]</span>
+              <h3 class="font-anton text-2xl uppercase mt-2">SOFTWARE &amp; AI</h3>
+              <p class="text-xs text-secondary mt-3 leading-relaxed">Hackathons, autonomous agents, CTFs, and high-speed competitive programming.</p>
+            </div>
+            <button onclick="filterByTrack('software')" class="mt-6 text-left font-mono text-xs font-bold text-primary uppercase hover:underline">
+              VIEW 4 EVENTS →
+            </button>
+          </div>
+
+          <div class="bg-white border-brutal brutalist-shadow p-5 flex flex-col justify-between">
+            <div>
+              <span class="font-mono text-xs font-bold text-primary uppercase">[TRACK 02]</span>
+              <h3 class="font-anton text-2xl uppercase mt-2">ROBOTECHTHON</h3>
+              <p class="text-xs text-secondary mt-3 leading-relaxed">30kg combat sumo wars, high-speed line followers, and micro FPV drone racing.</p>
+            </div>
+            <button onclick="filterByTrack('robotics')" class="mt-6 text-left font-mono text-xs font-bold text-primary uppercase hover:underline">
+              VIEW 3 EVENTS →
+            </button>
+          </div>
+
+          <div class="bg-white border-brutal brutalist-shadow p-5 flex flex-col justify-between">
+            <div>
+              <span class="font-mono text-xs font-bold text-primary uppercase">[TRACK 03]</span>
+              <h3 class="font-anton text-2xl uppercase mt-2">TECH TANK</h3>
+              <p class="text-xs text-secondary mt-3 leading-relaxed">Startup pitch showcase before seed VCs with ₹25L+ grant incubation access.</p>
+            </div>
+            <button onclick="filterByTrack('startup')" class="mt-6 text-left font-mono text-xs font-bold text-primary uppercase hover:underline">
+              VIEW 1 EVENT →
+            </button>
+          </div>
+
+          <div class="bg-white border-brutal brutalist-shadow p-5 flex flex-col justify-between">
+            <div>
+              <span class="font-mono text-xs font-bold text-primary uppercase">[TRACK 04]</span>
+              <h3 class="font-anton text-2xl uppercase mt-2">BOLLYWOOD NIGHT</h3>
+              <p class="text-xs text-secondary mt-3 leading-relaxed">Headline star celebrity concert, amphitheater laser show, and DJ closing set.</p>
+            </div>
+            <button onclick="filterByTrack('cultural')" class="mt-6 text-left font-mono text-xs font-bold text-primary uppercase hover:underline">
+              VIEW DETAILS →
+            </button>
+          </div>
+
+          <div class="bg-white border-brutal brutalist-shadow p-5 flex flex-col justify-between">
+            <div>
+              <span class="font-mono text-xs font-bold text-primary uppercase">[TRACK 05]</span>
+              <h3 class="font-anton text-2xl uppercase mt-2">ESPORTS &amp; MEDIA</h3>
+              <p class="text-xs text-secondary mt-3 leading-relaxed">Valorant LAN tournaments, BGMI squads, and 6-hour rapid UI/UX sprints.</p>
+            </div>
+            <button onclick="filterByTrack('gaming')" class="mt-6 text-left font-mono text-xs font-bold text-primary uppercase hover:underline">
+              VIEW 2 EVENTS →
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 4: EVENTS DIRECTORY ================= -->
+    <section id="events" class="w-full px-4 md:px-8 py-20 border-b-2 border-on-surface bg-canvas">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div>
+            <span class="font-mono text-xs font-bold text-primary uppercase">[OPERATIONAL REGISTRY]</span>
+            <h2 class="font-anton text-4xl sm:text-6xl uppercase tracking-tight leading-none mt-2">
+              EVENTS DIRECTORY
+            </h2>
+          </div>
+          
+          <!-- Search Input -->
+          <div class="w-full md:w-80 relative">
+            <input type="text" id="eventSearchInput" placeholder="SEARCH EVENTS, TECH OR TRACKS..." class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-primary" />
+          </div>
+        </div>
+
+        <!-- Filter Pill Tabs -->
+        <div class="flex flex-wrap gap-2 mb-8">
+          <button class="track-filter-btn px-4 py-2 bg-on-surface text-surface font-mono text-xs uppercase font-bold border-brutal" data-track="all">ALL (11)</button>
+          <button class="track-filter-btn px-4 py-2 bg-surface text-on-surface font-mono text-xs uppercase font-bold border-brutal" data-track="software">SOFTWARE &amp; AI</button>
+          <button class="track-filter-btn px-4 py-2 bg-surface text-on-surface font-mono text-xs uppercase font-bold border-brutal" data-track="robotics">ROBOTICS</button>
+          <button class="track-filter-btn px-4 py-2 bg-surface text-on-surface font-mono text-xs uppercase font-bold border-brutal" data-track="startup">TECH TANK</button>
+          <button class="track-filter-btn px-4 py-2 bg-surface text-on-surface font-mono text-xs uppercase font-bold border-brutal" data-track="cultural">CULTURAL NIGHT</button>
+          <button class="track-filter-btn px-4 py-2 bg-surface text-on-surface font-mono text-xs uppercase font-bold border-brutal" data-track="gaming">GAMING &amp; DESIGN</button>
+        </div>
+
+        <!-- Dynamic Events Grid -->
+        <div id="eventsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated by app.js -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 5: FESTIVAL SCHEDULE ================= -->
+    <section id="schedule" class="w-full px-4 md:px-8 py-20 border-b-2 border-on-surface bg-[#F0EEE8]">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div>
+            <span class="font-mono text-xs font-bold text-primary uppercase">[CHRONOLOGICAL TELEMETRY]</span>
+            <h2 class="font-anton text-4xl sm:text-6xl uppercase tracking-tight leading-none mt-2">
+              48-HOUR TIMELINE
+            </h2>
+          </div>
+
+          <!-- Day Switcher Buttons -->
+          <div class="flex gap-2">
+            <button class="schedule-day-btn px-5 py-2.5 bg-on-surface text-surface font-mono text-xs uppercase font-bold border-brutal" data-day="day1">
+              DAY 01 // INCEPTION
+            </button>
+            <button class="schedule-day-btn px-5 py-2.5 bg-surface text-on-surface font-mono text-xs uppercase font-bold border-brutal" data-day="day2">
+              DAY 02 // FINALE
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Items List -->
+        <div id="scheduleListContainer" class="space-y-3">
+          <!-- Populated by app.js -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 6: ARENA & SHOWCASES ================= -->
+    <section id="arenas" class="w-full px-4 md:px-8 py-20 border-b-2 border-on-surface bg-canvas">
+      <div class="max-w-7xl mx-auto space-y-16">
+        
+        <!-- Robotechthon Feature Showcase -->
+        <div class="bg-white border-brutal-thick brutalist-shadow-lg p-6 md:p-10">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-mono text-xs font-bold text-primary uppercase">[OCTAGON BATTLEGROUND // SPECS]</span>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7">
+              <h3 class="font-anton text-4xl sm:text-5xl uppercase tracking-tight leading-none mb-4">
+                ROBOTECHTHON COMBAT OCTAGON
+              </h3>
+              <p class="text-sm text-secondary leading-relaxed mb-6 font-normal">
+                Engineered for maximum kinetic impact: a 16x16 ft arena enclosed with 12mm bulletproof polycarbonate walls, pneumatic flipper hazards, spinning pit saws, and live real-time telemetry cameras broadcasting every blow.
+              </p>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono text-xs mb-6">
+                <div class="p-3 bg-[#F0EEE8] border-brutal">
+                  <span class="text-secondary uppercase">WEIGHT CLASS:</span><br />
+                  <strong class="text-primary text-sm">30KG SUMO</strong>
+                </div>
+                <div class="p-3 bg-[#F0EEE8] border-brutal">
+                  <span class="text-secondary uppercase">SAFETY CAGE:</span><br />
+                  <strong class="text-sm">12MM POLYCARB</strong>
+                </div>
+                <div class="p-3 bg-[#F0EEE8] border-brutal">
+                  <span class="text-secondary uppercase">TOTAL PRIZE:</span><br />
+                  <strong class="text-primary text-sm">₹1,25,000</strong>
+                </div>
+              </div>
+              <button onclick="openRegistrationModal('robotechthon')" class="px-6 py-3 bg-[#111111] text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-primary transition-all brutalist-shadow-sm">
+                REGISTER COMBAT BOT SQUAD
+              </button>
+            </div>
+            <div class="lg:col-span-5 bg-[#F0EEE8] border-brutal p-6 text-center">
+              <div class="font-mono text-xs text-primary font-bold mb-2">[ARENA TELEMETRY]</div>
+              <div class="font-anton text-3xl uppercase text-on-surface">32 BOTS CLASH</div>
+              <div class="font-mono text-xs text-secondary mt-1">DUAL ELIMINATION BRACKET</div>
+              <div class="mt-4 p-4 bg-white border-brutal font-mono text-[11px] text-left text-secondary leading-relaxed">
+                • 3-Minute Combat Rounds<br />
+                • Active Pit Hazards at Minute 2<br />
+                • Live Broadcast &amp; Decibel Sensor Scoring
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tech Tank Feature Showcase -->
+        <div class="bg-[#111111] text-white border-brutal-thick brutalist-shadow-lg p-6 md:p-10">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-mono text-xs font-bold text-primary uppercase">[CAPITAL ELEVATOR]</span>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7">
+              <h3 class="font-anton text-4xl sm:text-5xl uppercase tracking-tight leading-none mb-4 text-white">
+                TECH TANK: VENTURE FINALE
+              </h3>
+              <p class="text-sm text-gray-300 leading-relaxed mb-6 font-normal">
+                Got a working hardware prototype, SaaS MVP, or deep-tech intellectual property? Step inside the Tech Tank to pitch before tier-1 venture partners, family offices, and angel networks.
+              </p>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono text-xs mb-6 text-black">
+                <div class="p-3 bg-white border-brutal">
+                  <span class="text-gray-500 uppercase">PITCH FORMAT:</span><br />
+                  <strong class="text-sm">5M PITCH + 5M Q&amp;A</strong>
+                </div>
+                <div class="p-3 bg-white border-brutal">
+                  <span class="text-gray-500 uppercase">GRANT POOL:</span><br />
+                  <strong class="text-primary text-sm">₹25L PIPELINE</strong>
+                </div>
+                <div class="p-3 bg-white border-brutal">
+                  <span class="text-gray-500 uppercase">INVESTOR JURY:</span><br />
+                  <strong class="text-sm">6 ACTIVE VCs</strong>
+                </div>
+              </div>
+              <button onclick="openRegistrationModal('tech-tank')" class="px-6 py-3 bg-primary text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-white hover:text-black transition-all brutalist-shadow-sm">
+                APPLY FOR FOUNDER PITCH SLOT
+              </button>
+            </div>
+            <div class="lg:col-span-5 bg-black/60 border border-gray-700 p-6 text-center">
+              <div class="font-mono text-xs text-primary font-bold mb-2">[VALIDATION CRITERIA]</div>
+              <div class="font-anton text-3xl uppercase text-white">INVESTOR READY</div>
+              <div class="font-mono text-xs text-gray-400 mt-1">20 STARTUPS SHORTLISTED</div>
+              <div class="mt-4 p-4 bg-gray-900 border border-gray-700 font-mono text-[11px] text-left text-gray-300 leading-relaxed">
+                • Working Prototype / Alpha MVP Mandatory<br />
+                • Clear Market Sizing &amp; Monetization Thesis<br />
+                • Seed Term Sheets Offered On The Spot
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 7: BOLLYWOOD NIGHT ================= -->
+    <section id="bollywood" class="w-full px-4 md:px-8 py-20 border-b-2 border-on-surface bg-[#F0EEE8]">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="bg-gradient-to-br from-red-900 via-black to-zinc-900 text-white border-brutal-thick brutalist-shadow-lg p-8 md:p-14 relative overflow-hidden">
+          
+          <div class="relative z-10 max-w-2xl">
+            <div class="inline-block px-3 py-1 bg-primary text-white font-mono text-xs uppercase font-bold mb-4">
+              [DAY 02 GRAND CLIMAX // 07:00 PM]
+            </div>
+            <h2 class="font-anton text-5xl sm:text-7xl uppercase tracking-tight leading-none mb-4 text-white">
+              BOLLYWOOD STAR CULTURAL NIGHT
+            </h2>
+            <p class="text-sm sm:text-base text-gray-300 leading-relaxed mb-6">
+              Celebrity playback headliner, synchronized amphitheater laser pyrotechnics, student food carnival, and closing EDM dance set under the open sky at the IILM Football Grounds.
+            </p>
+
+            <div class="p-4 bg-black/50 border border-red-500/40 mb-6 font-mono text-xs space-y-1">
+              <div>• <strong>VENUE:</strong> IILM University Football Grounds, Sector 53 Gurugram</div>
+              <div>• <strong>ENTRY RESTRICTION:</strong> Strictly open to confirmed SYNAPSE ticket holders with verified College ID</div>
+              <div>• <strong>GATES OPEN:</strong> 06:30 PM (Security check and wristband dispensing)</div>
+            </div>
+
+            <button onclick="openRegistrationModal('bollywood-night')" class="px-8 py-4 bg-primary text-white font-anton text-xl uppercase tracking-wider border-2 border-white hover:bg-white hover:text-black transition-all brutalist-shadow-lg">
+              CLAIM CONCERT ENTRY PASS (₹399)
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 8: FAQS & GEONAVIGATION ================= -->
+    <section id="faqs" class="w-full px-4 md:px-8 py-20 border-b-2 border-on-surface bg-canvas">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          <!-- Left Column: FAQ Accordions -->
+          <div class="lg:col-span-7">
+            <span class="font-mono text-xs font-bold text-primary uppercase">[KNOWLEDGE BASE]</span>
+            <h2 class="font-anton text-4xl sm:text-5xl uppercase tracking-tight leading-none mt-2 mb-8">
+              FREQUENTLY ASKED QUESTIONS
+            </h2>
+
+            <div id="faqsAccordionContainer" class="space-y-3">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+
+          <!-- Right Column: Campus Geonavigation -->
+          <div class="lg:col-span-5">
+            <span class="font-mono text-xs font-bold text-primary uppercase">[GEOLOCATION TELEMETRY]</span>
+            <h2 class="font-anton text-4xl sm:text-5xl uppercase tracking-tight leading-none mt-2 mb-8">
+              HOW TO REACH
+            </h2>
+
+            <div class="bg-white border-brutal brutalist-shadow p-6 space-y-4">
+              <div>
+                <div class="font-mono text-xs text-primary font-bold uppercase">[CAMPUS ADDRESS]</div>
+                <div class="font-space text-lg font-bold text-on-surface mt-1">
+                  IILM University, Gurugram
+                </div>
+                <div class="font-mono text-xs text-secondary mt-0.5">
+                  1, Knowledge Center, Golf Course Road, Sector 53, Gurugram, Haryana 122003
+                </div>
+              </div>
+
+              <div class="border-t border-surface-variant pt-3 space-y-2 font-mono text-xs">
+                <div>
+                  <strong class="text-on-surface">RAPID METRO:</strong> Sector 53-54 Rapid Metro Station (3 mins walk)
+                </div>
+                <div>
+                  <strong class="text-on-surface">YELLOW LINE:</strong> Interchange at Sikanderpur Metro Station
+                </div>
+                <div>
+                  <strong class="text-on-surface">AIRPORT:</strong> 25 minutes from IGI Airport New Delhi via NH-48
+                </div>
+              </div>
+
+              <div class="border-t border-surface-variant pt-4">
+                <a href="https://maps.google.com/?q=IILM+University+Gurugram" target="_blank" class="block w-full py-3 bg-[#111111] text-white font-mono text-xs font-bold uppercase text-center border-brutal hover:bg-primary transition-all">
+                  OPEN IN GOOGLE MAPS ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="w-full bg-[#111111] text-white border-t-4 border-on-surface pt-16 pb-12 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto space-y-12">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+        
+        <div class="md:col-span-6 space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-primary flex items-center justify-center text-white font-anton text-xl border border-white">
+              S
+            </div>
+            <span class="font-anton text-3xl uppercase tracking-wider">SYNAPSE 2027</span>
+          </div>
+          <p class="font-mono text-xs text-gray-400 max-w-md leading-relaxed">
+            The annual 48-hour flagship collegiate convergence summit. Initiated and directed by <strong>VERVE Club</strong> at <strong>IILM University, Gurugram</strong>.
+          </p>
+          <div class="font-mono text-xs text-primary font-bold">
+            SITE BY MAYANK // HIGH VOLTAGE ARCHITECTURE
+          </div>
+        </div>
+
+        <div class="md:col-span-3 space-y-2 font-mono text-xs">
+          <div class="text-gray-400 font-bold uppercase">[SYSTEM PORTALS]</div>
+          <div><a href="/verify.html" class="hover:text-primary transition-colors">Gate Scanner Terminal</a></div>
+          <div><a href="/admin.html" class="hover:text-primary transition-colors">Organizer Admin Console</a></div>
+          <div><a href="/api/health" target="_blank" class="hover:text-primary transition-colors">API Health Telemetry</a></div>
+        </div>
+
+        <div class="md:col-span-3 space-y-2 font-mono text-xs">
+          <div class="text-gray-400 font-bold uppercase">[ORGANIZER CONTACT]</div>
+          <div>VERVE Club Council: <span class="text-gray-300">verve@iilm.edu</span></div>
+          <div>Emergency Desk: <span class="text-gray-300">+91 98112 00010</span></div>
+          <div>Campus Gate 01: <span class="text-gray-300">Sector 53, Gurugram</span></div>
+        </div>
+
+      </div>
+
+      <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-gray-500">
+        <div>
+          © 2027 SYNAPSE • INITIATED BY VERVE CLUB, IILM UNIVERSITY GURUGRAM.
+        </div>
+        <div>
+          DESIGNED &amp; DEVELOPED BY <strong>MAYANK</strong>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ================= EVENT DETAIL MODAL (RULEBOOK) ================= -->
+  <div id="eventDetailModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div id="eventModalBody" class="bg-white border-brutal-thick brutalist-shadow-lg max-w-2xl w-full overflow-hidden">
+      <!-- Injected by app.js -->
+    </div>
+  </div>
+
+  <!-- ================= REGISTRATION & PAYMENT MODAL ================= -->
+  <div id="registrationModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white border-brutal-thick brutalist-shadow-lg max-w-lg w-full my-8 overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="bg-[#111111] text-white p-5 border-b-brutal flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+          <span class="font-anton text-2xl uppercase tracking-wider">SYNAPSE 2027 REGISTRATION</span>
+        </div>
+        <button onclick="closeRegistrationModal()" class="w-7 h-7 flex items-center justify-center bg-white text-black hover:bg-primary hover:text-white border-brutal transition-colors">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+
+      <!-- STEP 1: Registration Form -->
+      <div id="regStep1" class="reg-step p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <div class="font-mono text-xs text-secondary">[ENTER ATTENDEE TELEMETRY TO ISSUE PASS]</div>
+        
+        <form id="registrationForm" class="space-y-3 font-mono text-xs">
+          <div>
+            <label class="block font-bold uppercase mb-1">Full Student Name *</label>
+            <input type="text" id="regFullName" placeholder="e.g. Mayank Sharma" required class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold uppercase mb-1">Student Email *</label>
+              <input type="email" id="regEmail" placeholder="student@college.edu" required class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+            </div>
+            <div>
+              <label class="block font-bold uppercase mb-1">Phone Number *</label>
+              <input type="tel" id="regPhone" placeholder="+91 9876543210" required class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold uppercase mb-1">College / University *</label>
+              <input type="text" id="regCollege" placeholder="e.g. IILM University" required class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+            </div>
+            <div>
+              <label class="block font-bold uppercase mb-1">Roll / Student ID</label>
+              <input type="text" id="regStudentId" placeholder="e.g. 2024-CSE-091" class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold uppercase mb-1">Select Event / Pass *</label>
+            <select id="regEventSelect" class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary">
+              <!-- Injected by app.js -->
+            </select>
+          </div>
+
+          <div id="regTeamSection" class="hidden">
+            <label class="block font-bold uppercase mb-1">Squad / Team / Bot Name</label>
+            <input type="text" id="regTeamName" placeholder="e.g. CyberKnights" class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+          </div>
+
+          <div>
+            <label class="block font-bold uppercase mb-1">Attendee Role</label>
+            <select id="regRole" class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary">
+              <option value="Hacker">Hacker (Software Track)</option>
+              <option value="Roboticist">Roboticist (Hardware Track)</option>
+              <option value="Founder / Pitcher">Founder / Pitcher (Tech Tank)</option>
+              <option value="Gamer">Gamer / eSports Athlete</option>
+              <option value="Attendee" selected>General Fest &amp; Concert Attendee</option>
+            </select>
+          </div>
+
+          <!-- Fee summary box -->
+          <div class="bg-[#F0EEE8] p-3 border-brutal flex items-center justify-between mt-2">
+            <span class="font-mono text-xs text-secondary font-bold uppercase">PAYABLE ADMISSION FEE:</span>
+            <span id="regFeeDisplay" class="font-anton text-xl text-primary font-bold">₹0</span>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full py-3 bg-primary text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-primary-hover transition-all brutalist-shadow">
+              PROCEED TO CONFIRMATION
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- STEP 2: Payment Checkout Simulation (UPI / Card) -->
+      <div id="regStep2" class="reg-step p-6 space-y-4 hidden">
+        <div class="text-center border-b-brutal pb-4">
+          <div class="font-mono text-xs text-primary font-bold uppercase">[GATEWAY CHECKOUT]</div>
+          <h3 class="font-anton text-2xl uppercase mt-1">CONFIRM YOUR PASS PAYMENT</h3>
+          <div class="font-mono text-xs text-secondary mt-1">
+            Ticket Ref: <strong id="checkoutTicketId" class="text-black">SYN27-XXXX</strong> • Total: <strong id="checkoutAmount" class="text-primary text-sm font-bold">₹0</strong>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="font-mono text-xs font-bold uppercase text-secondary">SELECT PAYMENT METHOD:</div>
+          
+          <!-- UPI Option -->
+          <label class="block p-3 border-brutal bg-[#F0EEE8] cursor-pointer hover:bg-white transition-colors">
+            <div class="flex items-center gap-3">
+              <input type="radio" name="paymentMethod" value="UPI" checked class="accent-primary" />
+              <div class="flex-1">
+                <strong class="font-mono text-xs uppercase">Instant UPI (GPay / PhonePe / Paytm)</strong>
+                <div class="text-[10px] text-secondary">Zero convenience fee. Instant confirmation.</div>
+              </div>
+            </div>
+            <!-- Simulated UPI QR -->
+            <div class="mt-3 p-3 bg-white border border-gray-300 flex items-center justify-center gap-4">
+              <div class="w-24 h-24 bg-gray-100 border border-black flex items-center justify-center font-mono text-[9px] text-center p-1">
+                [UPI QR: SYNAPSE-IILM@UPI]
+              </div>
+              <div class="font-mono text-[11px] text-secondary">
+                Scan with any UPI App or tap confirm below for simulated test authorization.
+              </div>
+            </div>
+          </label>
+
+          <!-- Card Option -->
+          <label class="block p-3 border-brutal bg-[#F0EEE8] cursor-pointer hover:bg-white transition-colors">
+            <div class="flex items-center gap-3">
+              <input type="radio" name="paymentMethod" value="CARD" class="accent-primary" />
+              <div>
+                <strong class="font-mono text-xs uppercase">Debit / Credit Card</strong>
+                <div class="text-[10px] text-secondary">Visa, Mastercard, RuPay accepted.</div>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <div class="pt-2">
+          <button id="confirmPayBtn" class="w-full py-3.5 bg-primary text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-primary-hover transition-all brutalist-shadow">
+            CONFIRM PAYMENT NOW
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Confirmed Ticket Output & Automated Email Notification -->
+      <div id="regStep3" class="reg-step p-6 space-y-4 hidden max-h-[80vh] overflow-y-auto">
+        <div class="text-center">
+          <span class="material-symbols-outlined text-4xl text-green-700">verified</span>
+          <h3 class="font-anton text-2xl uppercase text-green-800">REGISTRATION CONFIRMED!</h3>
+          <div class="font-mono text-xs text-secondary mt-0.5">Your official pass has been generated and recorded in the database.</div>
+        </div>
+
+        <!-- Notification of automated email -->
+        <div id="emailNotificationNotice"></div>
+
+        <!-- Rendered Ticket Pass Card -->
+        <div id="passCardOutput">
+          <!-- Injected dynamically by app.js -->
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button onclick="printTicketPass()" class="flex-1 py-3 bg-[#111111] text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-primary transition-all brutalist-shadow-sm flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">print</span>
+            <span>PRINT / SAVE PDF</span>
+          </button>
+          <button onclick="closeRegistrationModal()" class="px-5 py-3 bg-white text-black font-mono text-xs uppercase font-bold border-brutal hover:bg-[#F0EEE8] transition-all">
+            DONE
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/data.js"></script>
+  <script src="/js/three-hero.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

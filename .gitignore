@@ -10,6 +10,12 @@ node_modules/
 /build
 /dist
 
+# SQLite Database
+*.db
+*.sqlite
+*.sqlite3
+synapse.db
+
 # Misc
 .DS_Store
 *.pem

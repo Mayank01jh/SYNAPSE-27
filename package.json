@@ -1,0 +1,27 @@
+{
+  "name": "synapse-2027",
+  "version": "1.0.0",
+  "description": "SYNAPSE 2027 Official Web & Registration Platform - Initiated by VERVE Club IILM, Site by Mayank",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "nodemailer": "^6.10.0",
+    "qrcode": "^1.5.4"
+  },
+  "keywords": [
+    "synapse-2027",
+    "iilm-university",
+    "verve-club",
+    "tech-fest",
+    "hackathon",
+    "robotics"
+  ],
+  "author": "Mayank",
+  "license": "MIT"
+}

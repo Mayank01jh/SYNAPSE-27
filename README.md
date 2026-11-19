@@ -52,11 +52,35 @@ SYNAPSE '27 is the flagship annual technology festival of IILM University, bring
 
 ## 💻 Getting Started
 
-Each UI screen inside `stitch_tech_fest_2027_website_ui/` contains a self-contained `code.html` file and a reference preview screenshot `screen.png`. 
+### 1. Install Dependencies
+```bash
+npm install
+```
 
-To preview any screen:
-1. Open the desired directory (e.g., `stitch_tech_fest_2027_website_ui/home_tech_fest_2027_iilm_university_1`).
-2. Open `code.html` in any modern web browser or run with a local server:
-   ```bash
-   npx serve stitch_tech_fest_2027_website_ui/home_tech_fest_2027_iilm_university_1
-   ```
+### 2. Launch Full-Stack Application
+```bash
+npm start
+```
+
+The application will start on **`http://localhost:3000`**:
+- **Main Festival Portal**: `http://localhost:3000/`
+- **Gate QR Scanner & Verifier**: `http://localhost:3000/verify.html`
+- **Organizer Admin Console**: `http://localhost:3000/admin.html`
+- **API Health Telemetry**: `http://localhost:3000/api/health`
+
+---
+
+## ⚡ Backend, Database & Email Dispatch
+
+- **Native SQLite Database (`synapse.db`)**: Tracks student registrations, payment confirmations (`CAPTURED`/`PENDING`), and gate admissions.
+- **Automated Ticket Emailing**: Uses Nodemailer to send official entry passes with high-resolution QR codes, security instructions, and print previews (falls back to Ethereal test inbox in development).
+- **Gate Security Scanner (`/verify.html`)**: Mobile camera QR scanner for VERVE coordinators at the gate to prevent pass duplicates.
+- **Organizer Console (`/admin.html`)**: Real-time registration and revenue analytics with one-click CSV roster export.
+
+---
+
+## 🏛️ Credits & Attribution
+
+- **Initiator & Organizer**: **VERVE Club**, IILM University, Gurugram
+- **Architecture & Development**: **Site by Mayank**
+

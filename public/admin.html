@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Organizer Admin Dashboard | SYNAPSE 2027</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="bg-[#FCF9F3] text-[#111111] font-sans antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="bg-[#111111] text-[#FCF9F3] border-b-2 border-black px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-3 rounded-full bg-[#C90016] animate-pulse"></span>
+        <div>
+          <h1 class="font-anton text-2xl uppercase tracking-wider leading-none">SYNAPSE 2027</h1>
+          <div class="font-mono text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">VERVE CLUB ORGANIZER COMMAND CONSOLE</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/" class="font-mono text-xs text-gray-300 hover:text-white uppercase flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">home</span>
+          <span>MAIN SITE</span>
+        </a>
+        <a href="/verify.html" class="font-mono text-xs text-gray-300 hover:text-white uppercase flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">qr_code_scanner</span>
+          <span>GATE SCANNER</span>
+        </a>
+        <button onclick="fetchAdminData()" class="px-3 py-1.5 bg-[#C90016] text-white font-mono text-xs uppercase font-bold border border-white hover:bg-red-800 transition-all">
+          REFRESH DATA
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto w-full px-4 py-8 flex-1 space-y-8">
+
+    <!-- Top Telemetry Strip -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b-brutal pb-4">
+      <div>
+        <h2 class="font-anton text-3xl uppercase tracking-wide">REGISTRATION & PAYMENT TELEMETRY</h2>
+        <div class="font-mono text-xs text-gray-500 mt-1">REAL-TIME STUDENT ROSTER & GATE METRICS</div>
+      </div>
+      <button onclick="exportCSV()" class="px-4 py-2 bg-[#111111] text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-[#C90016] transition-all brutalist-shadow-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">download</span>
+        <span>EXPORT ROSTER (CSV)</span>
+      </button>
+    </div>
+
+    <!-- Stat Cards Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white border-brutal brutalist-shadow p-5">
+        <div class="font-mono text-xs text-gray-500 uppercase font-bold">TOTAL REGISTRATIONS</div>
+        <div class="font-anton text-4xl text-[#111111] mt-2" id="statTotalRegs">0</div>
+        <div class="font-mono text-[11px] text-gray-500 mt-1" id="statConfirmedRegs">0 Confirmed</div>
+      </div>
+
+      <div class="bg-white border-brutal brutalist-shadow p-5">
+        <div class="font-mono text-xs text-gray-500 uppercase font-bold">TOTAL REVENUE (INR)</div>
+        <div class="font-anton text-4xl text-[#C90016] mt-2" id="statTotalRevenue">₹0</div>
+        <div class="font-mono text-[11px] text-gray-500 mt-1">Payment Captured</div>
+      </div>
+
+      <div class="bg-white border-brutal brutalist-shadow p-5">
+        <div class="font-mono text-xs text-gray-500 uppercase font-bold">GATE CHECK-INS</div>
+        <div class="font-anton text-4xl text-green-700 mt-2" id="statTotalCheckins">0</div>
+        <div class="font-mono text-[11px] text-gray-500 mt-1">Admitted On-Site</div>
+      </div>
+
+      <div class="bg-white border-brutal brutalist-shadow p-5">
+        <div class="font-mono text-xs text-gray-500 uppercase font-bold">PENDING PAYMENTS</div>
+        <div class="font-anton text-4xl text-amber-600 mt-2" id="statPendingRegs">0</div>
+        <div class="font-mono text-[11px] text-gray-500 mt-1">Awaiting Capture</div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Controls -->
+    <div class="bg-white border-brutal brutalist-shadow p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="w-full md:w-96 relative">
+        <input type="text" id="adminSearchInput" placeholder="SEARCH BY NAME, EMAIL, COLLEGE, TICKET ID..." class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-[#C90016]" />
+      </div>
+      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
+        <button class="filter-tab-btn px-3 py-1.5 bg-[#111111] text-white font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="all">ALL</button>
+        <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="CONFIRMED">CONFIRMED</button>
+        <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="PENDING">PENDING</button>
+        <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="CHECKED_IN">CHECKED IN</button>
+      </div>
+    </div>
+
+    <!-- Registrations Table -->
+    <div class="bg-white border-brutal brutalist-shadow overflow-x-auto">
+      <table class="w-full text-left border-collapse font-mono text-xs">
+        <thead>
+          <tr class="bg-[#111111] text-white uppercase text-[11px] tracking-wider">
+            <th class="p-3 border-r border-gray-700">TICKET ID</th>
+            <th class="p-3 border-r border-gray-700">STUDENT NAME</th>
+            <th class="p-3 border-r border-gray-700">COLLEGE</th>
+            <th class="p-3 border-r border-gray-700">EVENT / TRACK</th>
+            <th class="p-3 border-r border-gray-700">FEE</th>
+            <th class="p-3 border-r border-gray-700">STATUS</th>
+            <th class="p-3 border-r border-gray-700">GATE STATUS</th>
+            <th class="p-3">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="registrationsTableBody" class="divide-y divide-gray-200">
+          <tr>
+            <td colspan="8" class="p-8 text-center text-gray-500">
+              [LOADING REGISTRATION DATA FROM SYNAPSE DATABASE...]
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#F0EEE8] border-t-2 border-black py-4 px-6 font-mono text-xs text-gray-600 text-center">
+    INITIATED BY <strong>VERVE CLUB, IILM UNIVERSITY</strong> • <strong>SITE BY MAYANK</strong> • SYNAPSE 2027
+  </footer>
+
+  <script>
+    let allRegistrations = [];
+    let currentFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchAdminData();
+
+      document.getElementById('adminSearchInput').addEventListener('input', renderTable);
+
+      document.querySelectorAll('.filter-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-tab-btn').forEach(b => {
+            b.classList.remove('bg-[#111111]', 'text-white');
+            b.classList.add('bg-white', 'text-gray-700');
+          });
+          btn.classList.remove('bg-white', 'text-gray-700');
+          btn.classList.add('bg-[#111111]', 'text-white');
+          currentFilter = btn.dataset.filter;
+          renderTable();
+        });
+      });
+    });
+
+    async function fetchAdminData() {
+      try {
+        const [statsRes, regsRes] = await Promise.all([
+          fetch('/api/admin/stats').then(r => r.json()),
+          fetch('/api/admin/registrations').then(r => r.json())
+        ]);
+
+        if (statsRes.success) {
+          const s = statsRes.stats;
+          document.getElementById('statTotalRegs').textContent = s.totalRegistrations;
+          document.getElementById('statConfirmedRegs').textContent = `${s.confirmedRegistrations} Confirmed`;
+          document.getElementById('statTotalRevenue').textContent = `₹${s.totalRevenue.toLocaleString()}`;
+          document.getElementById('statTotalCheckins').textContent = s.totalCheckins;
+          document.getElementById('statPendingRegs').textContent = s.pendingRegistrations;
+        }
+
+        if (regsRes.success) {
+          allRegistrations = regsRes.registrations;
+          renderTable();
+        }
+      } catch (err) {
+        console.error('Failed to load admin telemetry:', err);
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('registrationsTableBody');
+      const search = document.getElementById('adminSearchInput').value.toLowerCase().trim();
+
+      const filtered = allRegistrations.filter(r => {
+        const matchesFilter = 
+          currentFilter === 'all' ||
+          (currentFilter === 'CONFIRMED' && r.registration_status === 'CONFIRMED') ||
+          (currentFilter === 'PENDING' && r.registration_status === 'PENDING') ||
+          (currentFilter === 'CHECKED_IN' && r.checkin_time);
+
+        const matchesSearch = !search ||
+          r.ticket_id.toLowerCase().includes(search) ||
+          r.full_name.toLowerCase().includes(search) ||
+          r.email.toLowerCase().includes(search) ||
+          r.college.toLowerCase().includes(search) ||
+          r.event_name.toLowerCase().includes(search);
+
+        return matchesFilter && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-8 text-center text-gray-500 font-mono">
+              [NO REGISTRATIONS FOUND MATCHING CRITERIA]
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => `
+        <tr class="hover:bg-gray-50 transition-colors">
+          <td class="p-3 border-r font-bold text-[#C90016]">${r.ticket_id}</td>
+          <td class="p-3 border-r">
+            <div class="font-bold text-black uppercase">${r.full_name}</div>
+            <div class="text-[10px] text-gray-500">${r.email} • ${r.phone}</div>
+          </td>
+          <td class="p-3 border-r uppercase text-gray-700 truncate max-w-[160px]">${r.college}</td>
+          <td class="p-3 border-r">
+            <div class="font-bold uppercase text-[11px]">${r.event_name}</div>
+            <div class="text-[10px] text-gray-500">${r.role} (${r.track.toUpperCase()})</div>
+          </td>
+          <td class="p-3 border-r font-bold">₹${r.amount}</td>
+          <td class="p-3 border-r">
+            <span class="px-2 py-0.5 text-[10px] font-bold uppercase ${r.registration_status === 'CONFIRMED' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">
+              ${r.registration_status}
+            </span>
+          </td>
+          <td class="p-3 border-r">
+            ${r.checkin_time ? `
+              <span class="px-2 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-800 uppercase flex items-center gap-1 w-max">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> ADMITTED
+              </span>
+            ` : `
+              <span class="text-gray-400 text-[10px] uppercase">NOT CHECKED IN</span>
+            `}
+          </td>
+          <td class="p-3">
+            <a href="/verify.html?ticket=${encodeURIComponent(r.ticket_id)}" class="text-[#C90016] hover:underline font-bold text-[11px] uppercase">
+              VERIFY / SCAN
+            </a>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function exportCSV() {
+      if (allRegistrations.length === 0) {
+        alert('No registrations available to export.');
+        return;
+      }
+
+      const headers = ['Ticket ID', 'Full Name', 'Email', 'Phone', 'College', 'Track', 'Event Name', 'Role', 'Team Name', 'Amount (INR)', 'Payment Status', 'Registration Status', 'Checkin Time', 'Registered At'];
+      const rows = allRegistrations.map(r => [
+        r.ticket_id,
+        `"${r.full_name.replace(/"/g, '""')}"`,
+        r.email,
+        r.phone,
+        `"${r.college.replace(/"/g, '""')}"`,
+        r.track,
+        `"${r.event_name.replace(/"/g, '""')}"`,
+        r.role,
+        `"${(r.team_name || '').replace(/"/g, '""')}"`,
+        r.amount,
+        r.payment_status,
+        r.registration_status,
+        r.checkin_time || 'N/A',
+        r.created_at
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `SYNAPSE_2027_REGISTRATIONS_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
