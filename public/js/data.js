@@ -15,8 +15,6 @@ const SYNAPSE_DATA = {
     location: "Auditorium, Café 3, New Building Classes & Lawn Area, IILM University, Sector 53, Gurugram",
     dates: "19th & 20th January 2027",
     timings: "8:00 AM to 6:00 PM",
-    budget: "₹4 – 5 Lakhs",
-    avgFee: 350,
     attendeesExpected: "BTech Department of IILM & Invited Colleges Nationwide",
     facultyCoordinator: {
       name: "Dr. Mansi Verma",
@@ -346,7 +344,7 @@ const SYNAPSE_DATA = {
       format: "Individual Student Pass",
       slots: "Both Days (19 - 20 Jan)",
       fee: 350,
-      prizePool: "₹4-5L Festival",
+      prizePool: "Trophies & Merit Certificates",
       venue: "Auditorium, Café 3, Lawn Area & All Venues",
       timeline: "19th & 20th January 2027 • 8:00 AM – 6:00 PM",
       desc: "Official gate admission pass for SYNAPSE '27. Grants complete access to Day 1 & Day 2: Welcome ceremony with Ganesh Vandana, Tech Expo, workshops, spectator access to CTF & Hackathon pitches, closing ceremony, and food carnival.",
