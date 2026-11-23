@@ -154,6 +154,38 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// 1.5 Dynamic Public Settings (Price & Payment Options)
+app.get('/api/settings', (req, res) => {
+  try {
+    const settings = db.getSettings();
+    res.json({ success: true, settings });
+  } catch (err) {
+    console.error('[API /settings] Error:', err);
+    res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
+
+// Admin settings endpoints
+app.get('/api/admin/settings', adminLimiter, (req, res) => {
+  try {
+    const settings = db.getSettings();
+    res.json({ success: true, settings });
+  } catch (err) {
+    console.error('[API /admin/settings GET] Error:', err);
+    res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
+
+app.post('/api/admin/settings', adminLimiter, (req, res) => {
+  try {
+    const updated = db.updateSettings(req.body);
+    res.json({ success: true, settings: updated, message: 'Settings saved successfully.' });
+  } catch (err) {
+    console.error('[API /admin/settings POST] Error:', err);
+    res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
+
 // 2. Submit student registration
 app.post('/api/register', registrationLimiter, async (req, res) => {
   try {
@@ -244,7 +276,7 @@ app.post('/api/payment/confirm', paymentLimiter, async (req, res) => {
     }
 
     // Validate payment method
-    const validMethods = ['UPI', 'CARD', 'NETBANKING', 'FREE'];
+    const validMethods = ['UPI', 'CARD', 'NETBANKING', 'FREE', 'CASH'];
     const method = (paymentMethod || 'UPI').toUpperCase();
     if (!validMethods.includes(method)) {
       return res.status(400).json({ success: false, error: 'Invalid payment method.' });

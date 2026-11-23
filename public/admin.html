@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Organizer Admin Dashboard | SYNAPSE 2027</title>
+  <title>Organizer Command Console | SYNAPSE '27</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="bg-[#FCF9F3] text-[#111111] font-sans antialiased min-h-screen flex flex-col justify-between">
@@ -21,8 +22,8 @@
       <div class="flex items-center gap-3">
         <span class="w-3 h-3 rounded-full bg-[#C90016] animate-pulse"></span>
         <div>
-          <h1 class="font-anton text-2xl uppercase tracking-wider leading-none">SYNAPSE 2027</h1>
-          <div class="font-mono text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">VERVE CLUB ORGANIZER COMMAND CONSOLE</div>
+          <h1 class="font-anton text-2xl uppercase tracking-wider leading-none">SYNAPSE '27</h1>
+          <div class="font-mono text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">VERVE CLUB ORGANIZER COMMAND CONSOLE // IILM GURUGRAM</div>
         </div>
       </div>
       <div class="flex items-center gap-4">
@@ -34,8 +35,9 @@
           <span class="material-symbols-outlined text-sm">qr_code_scanner</span>
           <span>GATE SCANNER</span>
         </a>
-        <button onclick="fetchAdminData()" class="px-3 py-1.5 bg-[#C90016] text-white font-mono text-xs uppercase font-bold border border-white hover:bg-red-800 transition-all">
-          REFRESH DATA
+        <button onclick="fetchAdminData()" class="px-3 py-1.5 bg-[#C90016] text-white font-mono text-xs uppercase font-bold border border-white hover:bg-red-800 transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">sync</span>
+          <span>REFRESH</span>
         </button>
       </div>
     </div>
@@ -44,19 +46,34 @@
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto w-full px-4 py-8 flex-1 space-y-8">
 
-    <!-- Top Telemetry Strip -->
-    <div class="flex flex-wrap items-center justify-between gap-2 border-b-brutal pb-4">
+    <!-- Top Telemetry Strip & Navigation Tabs -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-brutal pb-4">
       <div>
-        <h2 class="font-anton text-3xl uppercase tracking-wide">REGISTRATION & PAYMENT TELEMETRY</h2>
-        <div class="font-mono text-xs text-gray-500 mt-1">REAL-TIME STUDENT ROSTER & GATE METRICS</div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="font-mono text-xs font-bold text-[#C90016] uppercase">[EXECUTIVE MANAGEMENT]</span>
+          <span class="text-gray-400">•</span>
+          <span class="font-mono text-xs text-gray-600 uppercase">19–20 JAN 2027</span>
+        </div>
+        <h2 class="font-anton text-3xl sm:text-4xl uppercase tracking-wide leading-none">
+          ORGANIZER COMMAND CONSOLE
+        </h2>
       </div>
-      <button onclick="exportCSV()" class="px-4 py-2 bg-[#111111] text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-[#C90016] transition-all brutalist-shadow-sm flex items-center gap-2">
-        <span class="material-symbols-outlined text-sm">download</span>
-        <span>EXPORT ROSTER (CSV)</span>
-      </button>
+
+      <!-- Section Switcher Tabs -->
+      <div class="flex flex-wrap gap-2 font-mono text-xs font-bold">
+        <button onclick="switchTab('roster')" id="tabBtnRoster" class="px-4 py-2 bg-[#111111] text-white border-brutal transition-all">
+          STUDENT REGISTRATIONS
+        </button>
+        <button onclick="switchTab('pricing')" id="tabBtnPricing" class="px-4 py-2 bg-white text-[#111111] border-brutal hover:bg-[#F0EEE8] transition-all">
+          SET PRICES & FEES
+        </button>
+        <button onclick="switchTab('payments')" id="tabBtnPayments" class="px-4 py-2 bg-white text-[#111111] border-brutal hover:bg-[#F0EEE8] transition-all">
+          PAYMENT OPTIONS & UPI
+        </button>
+      </div>
     </div>
 
-    <!-- Stat Cards Grid -->
+    <!-- Live Metric Cards Grid -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="bg-white border-brutal brutalist-shadow p-5">
         <div class="font-mono text-xs text-gray-500 uppercase font-bold">TOTAL REGISTRATIONS</div>
@@ -77,62 +94,233 @@
       </div>
 
       <div class="bg-white border-brutal brutalist-shadow p-5">
-        <div class="font-mono text-xs text-gray-500 uppercase font-bold">PENDING PAYMENTS</div>
+        <div class="font-mono text-xs text-gray-500 uppercase font-bold">PENDING ADMISSIONS</div>
         <div class="font-anton text-4xl text-amber-600 mt-2" id="statPendingRegs">0</div>
-        <div class="font-mono text-[11px] text-gray-500 mt-1">Awaiting Capture</div>
+        <div class="font-mono text-[11px] text-gray-500 mt-1">Awaiting Payment</div>
       </div>
     </div>
 
-    <!-- Filter & Search Controls -->
-    <div class="bg-white border-brutal brutalist-shadow p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="w-full md:w-96 relative">
-        <input type="text" id="adminSearchInput" placeholder="SEARCH BY NAME, EMAIL, COLLEGE, TICKET ID..." class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-[#C90016]" />
+    <!-- Alert Banner -->
+    <div id="adminAlertBanner" class="hidden p-4 border-2 font-mono text-xs font-bold transition-all"></div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- TAB 1: REGISTRATIONS ROSTER & METRICS -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="sectionRoster" class="space-y-6">
+      
+      <!-- Filter & Search Controls -->
+      <div class="bg-white border-brutal brutalist-shadow p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="w-full md:w-96 relative">
+          <input type="text" id="adminSearchInput" placeholder="SEARCH BY NAME, EMAIL, COLLEGE, TICKET ID..." class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-[#C90016]" />
+        </div>
+        
+        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
+          <button class="filter-tab-btn px-3 py-1.5 bg-[#111111] text-white font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="all">ALL</button>
+          <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="CONFIRMED">CONFIRMED</button>
+          <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="PENDING">PENDING</button>
+          <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="CHECKED_IN">CHECKED IN</button>
+          <button onclick="exportCSV()" class="px-3 py-1.5 bg-[#111111] text-white font-mono text-xs uppercase font-bold border-brutal hover:bg-[#C90016] transition-all flex items-center gap-1 ml-2">
+            <span class="material-symbols-outlined text-sm">download</span>
+            <span>CSV</span>
+          </button>
+        </div>
       </div>
-      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
-        <button class="filter-tab-btn px-3 py-1.5 bg-[#111111] text-white font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="all">ALL</button>
-        <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="CONFIRMED">CONFIRMED</button>
-        <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="PENDING">PENDING</button>
-        <button class="filter-tab-btn px-3 py-1.5 bg-white text-gray-700 font-mono text-xs uppercase font-bold border-brutal whitespace-nowrap" data-filter="CHECKED_IN">CHECKED IN</button>
+
+      <!-- Registrations Table -->
+      <div class="bg-white border-brutal brutalist-shadow overflow-x-auto">
+        <table class="w-full text-left border-collapse font-mono text-xs">
+          <thead>
+            <tr class="bg-[#111111] text-white uppercase text-[11px] tracking-wider">
+              <th class="p-3 border-r border-gray-700">TICKET ID</th>
+              <th class="p-3 border-r border-gray-700">STUDENT NAME</th>
+              <th class="p-3 border-r border-gray-700">COLLEGE</th>
+              <th class="p-3 border-r border-gray-700">EVENT / TRACK</th>
+              <th class="p-3 border-r border-gray-700">FEE</th>
+              <th class="p-3 border-r border-gray-700">STATUS</th>
+              <th class="p-3 border-r border-gray-700">GATE STATUS</th>
+              <th class="p-3">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="registrationsTableBody" class="divide-y divide-gray-200">
+            <tr>
+              <td colspan="8" class="p-8 text-center text-gray-500 font-mono">
+                [LOADING REGISTRATION DATA FROM SYNAPSE DATABASE...]
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- TAB 2: PRICING CONSOLE (SET PRICES) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="sectionPricing" class="hidden space-y-6">
+      <div class="bg-white border-brutal-thick brutalist-shadow-lg p-6 md:p-8">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b-brutal gap-4">
+          <div>
+            <span class="font-mono text-xs font-bold text-[#C90016] uppercase">[FEE CONFIGURATION ENGINE]</span>
+            <h3 class="font-anton text-2xl sm:text-3xl uppercase tracking-tight mt-1">SET REGISTRATION PRICES</h3>
+            <p class="text-xs text-gray-500 mt-1 font-mono">
+              Signed draft approved average fee: <strong>₹350</strong>. Adjust per-event pricing dynamically below.
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="setAllFees(350)" class="px-4 py-2 bg-[#F0EEE8] hover:bg-[#E5E2DC] border-brutal font-mono text-xs font-bold uppercase transition-all">
+              SET ALL TO ₹350
+            </button>
+            <button onclick="setAllFees(0)" class="px-4 py-2 bg-[#F0EEE8] hover:bg-[#E5E2DC] border-brutal font-mono text-xs font-bold uppercase transition-all">
+              MAKE ALL FREE (₹0)
+            </button>
+          </div>
+        </div>
+
+        <form id="pricingForm" class="mt-6 space-y-6">
+          
+          <!-- Default Fest Pass Fee -->
+          <div class="p-4 bg-[#FCF9F3] border-brutal flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="font-mono text-xs font-bold uppercase">DEFAULT FEST ENTRY FEE (INR)</div>
+              <div class="font-mono text-[11px] text-gray-500">Applies to general pass &amp; new events without explicit overrides</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-anton text-xl">₹</span>
+              <input type="number" id="settingDefaultFee" min="0" max="10000" class="w-32 bg-white border-brutal px-3 py-2 font-mono text-sm font-bold focus:outline-none focus:ring-1 focus:ring-[#C90016]" value="350" />
+            </div>
+          </div>
+
+          <!-- Per-Event Fee Breakdown -->
+          <div>
+            <h4 class="font-mono text-xs font-bold uppercase text-gray-600 mb-3">[INDIVIDUAL EVENT FEES]</h4>
+            <div id="eventFeesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Dynamically populated from SYNAPSE_DATA -->
+            </div>
+          </div>
+
+          <div class="pt-4 border-t-brutal flex justify-end">
+            <button type="submit" class="px-8 py-3 bg-[#C90016] text-white font-mono text-xs uppercase font-bold border-brutal brutalist-shadow hover:bg-red-800 transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">save</span>
+              <span>SAVE PRICING CONFIGURATION</span>
+            </button>
+          </div>
+        </form>
+
       </div>
     </div>
 
-    <!-- Registrations Table -->
-    <div class="bg-white border-brutal brutalist-shadow overflow-x-auto">
-      <table class="w-full text-left border-collapse font-mono text-xs">
-        <thead>
-          <tr class="bg-[#111111] text-white uppercase text-[11px] tracking-wider">
-            <th class="p-3 border-r border-gray-700">TICKET ID</th>
-            <th class="p-3 border-r border-gray-700">STUDENT NAME</th>
-            <th class="p-3 border-r border-gray-700">COLLEGE</th>
-            <th class="p-3 border-r border-gray-700">EVENT / TRACK</th>
-            <th class="p-3 border-r border-gray-700">FEE</th>
-            <th class="p-3 border-r border-gray-700">STATUS</th>
-            <th class="p-3 border-r border-gray-700">GATE STATUS</th>
-            <th class="p-3">ACTIONS</th>
-          </tr>
-        </thead>
-        <tbody id="registrationsTableBody" class="divide-y divide-gray-200">
-          <tr>
-            <td colspan="8" class="p-8 text-center text-gray-500">
-              [LOADING REGISTRATION DATA FROM SYNAPSE DATABASE...]
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- TAB 3: PAYMENT OPTIONS & UPI CONFIGURATION -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="sectionPayments" class="hidden space-y-6">
+      <div class="bg-white border-brutal-thick brutalist-shadow-lg p-6 md:p-8">
+        
+        <div class="pb-6 border-b-brutal">
+          <span class="font-mono text-xs font-bold text-[#C90016] uppercase">[PAYMENT GATEWAY &amp; CLEARANCE]</span>
+          <h3 class="font-anton text-2xl sm:text-3xl uppercase tracking-tight mt-1">PAYMENT OPTIONS &amp; UPI DETAILS</h3>
+          <p class="text-xs text-gray-500 mt-1 font-mono">
+            Enable or disable payment rails for students. Configure the official VERVE Club UPI ID for checkout.
+          </p>
+        </div>
+
+        <form id="paymentOptionsForm" class="mt-6 space-y-6">
+          
+          <!-- Method Toggles -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            
+            <label class="p-4 bg-[#FCF9F3] border-brutal cursor-pointer flex items-center justify-between hover:bg-[#F0EEE8]">
+              <div>
+                <div class="font-mono text-xs font-bold uppercase">UPI / QR CODE</div>
+                <div class="font-mono text-[10px] text-gray-500">Google Pay, PhonePe, Paytm</div>
+              </div>
+              <input type="checkbox" id="payMethodUpiCheck" checked class="w-5 h-5 accent-[#C90016]" />
+            </label>
+
+            <label class="p-4 bg-[#FCF9F3] border-brutal cursor-pointer flex items-center justify-between hover:bg-[#F0EEE8]">
+              <div>
+                <div class="font-mono text-xs font-bold uppercase">DEBIT / CREDIT CARD</div>
+                <div class="font-mono text-[10px] text-gray-500">Visa, Mastercard, RuPay</div>
+              </div>
+              <input type="checkbox" id="payMethodCardCheck" checked class="w-5 h-5 accent-[#C90016]" />
+            </label>
+
+            <label class="p-4 bg-[#FCF9F3] border-brutal cursor-pointer flex items-center justify-between hover:bg-[#F0EEE8]">
+              <div>
+                <div class="font-mono text-xs font-bold uppercase">NET BANKING</div>
+                <div class="font-mono text-[10px] text-gray-500">All Major Indian Banks</div>
+              </div>
+              <input type="checkbox" id="payMethodNetBankingCheck" checked class="w-5 h-5 accent-[#C90016]" />
+            </label>
+
+            <label class="p-4 bg-[#FCF9F3] border-brutal cursor-pointer flex items-center justify-between hover:bg-[#F0EEE8]">
+              <div>
+                <div class="font-mono text-xs font-bold uppercase">CASH AT DESK</div>
+                <div class="font-mono text-[10px] text-gray-500">Pay at Main Gate / Café 3</div>
+              </div>
+              <input type="checkbox" id="payMethodCashCheck" checked class="w-5 h-5 accent-[#C90016]" />
+            </label>
+
+          </div>
+
+          <!-- UPI Credentials Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t-brutal">
+            
+            <div class="space-y-4 font-mono text-xs">
+              <div>
+                <label class="block font-bold uppercase mb-1">Official UPI VPA ID *</label>
+                <input type="text" id="settingUpiId" value="verve.iilm@upi" class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#C90016]" />
+                <div class="text-[10px] text-gray-500 mt-1">Students will pay to this UPI handle during checkout.</div>
+              </div>
+
+              <div>
+                <label class="block font-bold uppercase mb-1">Payee Business / Club Name *</label>
+                <input type="text" id="settingPayeeName" value="VERVE Club IILM University" class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#C90016]" />
+              </div>
+
+              <div>
+                <label class="block font-bold uppercase mb-1">Payment Note / Description</label>
+                <input type="text" id="settingQrNote" value="SYNAPSE '27 Registration Fee" class="w-full bg-[#F0EEE8] border-brutal px-3 py-2 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-[#C90016]" />
+              </div>
+            </div>
+
+            <!-- Live QR Preview -->
+            <div class="bg-[#FCF9F3] border-brutal p-6 flex flex-col items-center justify-center text-center">
+              <div class="font-mono text-xs font-bold text-gray-500 uppercase mb-2">[STUDENT CHECKOUT UPI QR PREVIEW]</div>
+              <div id="liveUpiQrCode" class="p-3 bg-white border border-black mb-2"></div>
+              <div class="font-mono text-xs font-bold text-[#C90016]" id="liveUpiIdPreview">verve.iilm@upi</div>
+              <div class="font-mono text-[10px] text-gray-500 mt-1">Scan with GPay, PhonePe, or Paytm</div>
+            </div>
+
+          </div>
+
+          <div class="pt-4 border-t-brutal flex justify-end">
+            <button type="submit" class="px-8 py-3 bg-[#C90016] text-white font-mono text-xs uppercase font-bold border-brutal brutalist-shadow hover:bg-red-800 transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">save</span>
+              <span>SAVE PAYMENT OPTIONS</span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
     </div>
 
   </main>
 
   <!-- Footer -->
   <footer class="bg-[#F0EEE8] border-t-2 border-black py-4 px-6 font-mono text-xs text-gray-600 text-center">
-    INITIATED BY <strong>VERVE CLUB, IILM UNIVERSITY</strong> • <strong>SITE BY MAYANK</strong> • SYNAPSE 2027
+    INITIATED BY <strong>VERVE CLUB, IILM UNIVERSITY</strong> • <strong>SITE BY MAYANK</strong> • SYNAPSE '27
   </footer>
 
+  <script src="/js/data.js"></script>
   <script>
     let allRegistrations = [];
     let currentFilter = 'all';
+    let currentSettings = null;
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await fetchSettings();
       fetchAdminData();
 
       document.getElementById('adminSearchInput').addEventListener('input', renderTable);
@@ -149,7 +337,191 @@
           renderTable();
         });
       });
+
+      // Pricing Form Submit
+      document.getElementById('pricingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await savePricingSettings();
+      });
+
+      // Payments Form Submit
+      document.getElementById('paymentOptionsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await savePaymentSettings();
+      });
+
+      // UPI input live update
+      document.getElementById('settingUpiId').addEventListener('input', updateUpiQrPreview);
     });
+
+    function switchTab(tabName) {
+      document.getElementById('sectionRoster').classList.toggle('hidden', tabName !== 'roster');
+      document.getElementById('sectionPricing').classList.toggle('hidden', tabName !== 'pricing');
+      document.getElementById('sectionPayments').classList.toggle('hidden', tabName !== 'payments');
+
+      const tabs = [
+        { id: 'tabBtnRoster', active: tabName === 'roster' },
+        { id: 'tabBtnPricing', active: tabName === 'pricing' },
+        { id: 'tabBtnPayments', active: tabName === 'payments' }
+      ];
+
+      tabs.forEach(t => {
+        const btn = document.getElementById(t.id);
+        if (t.active) {
+          btn.className = "px-4 py-2 bg-[#111111] text-white border-brutal transition-all";
+        } else {
+          btn.className = "px-4 py-2 bg-white text-[#111111] border-brutal hover:bg-[#F0EEE8] transition-all";
+        }
+      });
+    }
+
+    function showAlert(msg, isSuccess = true) {
+      const banner = document.getElementById('adminAlertBanner');
+      banner.textContent = msg;
+      banner.className = isSuccess 
+        ? "p-4 border-2 border-green-600 bg-green-100 text-green-900 font-mono text-xs font-bold"
+        : "p-4 border-2 border-red-600 bg-red-100 text-red-900 font-mono text-xs font-bold";
+      banner.classList.remove('hidden');
+      setTimeout(() => { banner.classList.add('hidden'); }, 4000);
+    }
+
+    async function fetchSettings() {
+      try {
+        const res = await fetch('/api/admin/settings').then(r => r.json());
+        if (res.success && res.settings) {
+          currentSettings = res.settings;
+          populateSettingsUI();
+        }
+      } catch (err) {
+        console.warn('Failed to load settings from server:', err);
+      }
+    }
+
+    function populateSettingsUI() {
+      if (!currentSettings) return;
+
+      // Default fee
+      document.getElementById('settingDefaultFee').value = currentSettings.defaultFee || 350;
+
+      // Event Fees Grid
+      const container = document.getElementById('eventFeesGrid');
+      if (container && typeof SYNAPSE_DATA !== 'undefined') {
+        container.innerHTML = SYNAPSE_DATA.events.map(ev => {
+          const fee = currentSettings.eventFees?.[ev.id] !== undefined ? currentSettings.eventFees[ev.id] : (ev.fee || 350);
+          return `
+            <div class="p-3 bg-[#FCF9F3] border-brutal flex flex-col justify-between">
+              <div>
+                <div class="font-mono text-[10px] text-[#C90016] font-bold uppercase">[${ev.trackName}]</div>
+                <div class="font-bold text-xs uppercase mt-0.5">${ev.title}</div>
+              </div>
+              <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-300">
+                <span class="font-mono text-xs font-bold">FEE (₹):</span>
+                <input type="number" min="0" max="10000" data-event-id="${ev.id}" class="event-fee-input w-24 bg-white border-brutal px-2 py-1 font-mono text-xs font-bold text-right" value="${fee}" />
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Payment toggles
+      const pm = currentSettings.paymentMethods || {};
+      document.getElementById('payMethodUpiCheck').checked = pm.upi !== false;
+      document.getElementById('payMethodCardCheck').checked = pm.card !== false;
+      document.getElementById('payMethodNetBankingCheck').checked = pm.netbanking !== false;
+      document.getElementById('payMethodCashCheck').checked = pm.cash !== false;
+
+      // UPI settings
+      document.getElementById('settingUpiId').value = currentSettings.upiId || 'verve.iilm@upi';
+      document.getElementById('settingPayeeName').value = currentSettings.payeeName || 'VERVE Club IILM University';
+      document.getElementById('settingQrNote').value = currentSettings.qrCodeNote || "SYNAPSE '27 Registration Fee";
+
+      updateUpiQrPreview();
+    }
+
+    function setAllFees(amount) {
+      document.getElementById('settingDefaultFee').value = amount;
+      document.querySelectorAll('.event-fee-input').forEach(inp => {
+        inp.value = amount;
+      });
+    }
+
+    async function savePricingSettings() {
+      const defaultFee = parseInt(document.getElementById('settingDefaultFee').value, 10) || 350;
+      const eventFees = {};
+
+      document.querySelectorAll('.event-fee-input').forEach(inp => {
+        eventFees[inp.dataset.eventId] = parseInt(inp.value, 10) || 0;
+      });
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ defaultFee, eventFees })
+        }).then(r => r.json());
+
+        if (res.success) {
+          showAlert('Pricing configuration saved successfully! Active registration fees updated.');
+          currentSettings = res.settings;
+        } else {
+          showAlert('Error saving pricing: ' + res.error, false);
+        }
+      } catch (err) {
+        showAlert('Network error while saving pricing.', false);
+      }
+    }
+
+    async function savePaymentSettings() {
+      const upiId = document.getElementById('settingUpiId').value.trim();
+      const payeeName = document.getElementById('settingPayeeName').value.trim();
+      const qrCodeNote = document.getElementById('settingQrNote').value.trim();
+
+      const paymentMethods = {
+        upi: document.getElementById('payMethodUpiCheck').checked,
+        card: document.getElementById('payMethodCardCheck').checked,
+        netbanking: document.getElementById('payMethodNetBankingCheck').checked,
+        cash: document.getElementById('payMethodCashCheck').checked
+      };
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ upiId, payeeName, qrCodeNote, paymentMethods })
+        }).then(r => r.json());
+
+        if (res.success) {
+          showAlert('Payment options saved successfully! Checkout portal updated.');
+          currentSettings = res.settings;
+          updateUpiQrPreview();
+        } else {
+          showAlert('Error saving payments: ' + res.error, false);
+        }
+      } catch (err) {
+        showAlert('Network error while saving payment options.', false);
+      }
+    }
+
+    function updateUpiQrPreview() {
+      const upiId = document.getElementById('settingUpiId').value.trim() || 'verve.iilm@upi';
+      const payee = document.getElementById('settingPayeeName').value.trim() || 'VERVE Club IILM';
+      document.getElementById('liveUpiIdPreview').textContent = upiId;
+
+      const qrTarget = document.getElementById('liveUpiQrCode');
+      qrTarget.innerHTML = '';
+
+      if (typeof QRCode !== 'undefined') {
+        const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payee)}&cu=INR&tn=SYNAPSE%2027`;
+        new QRCode(qrTarget, {
+          text: upiUrl,
+          width: 140,
+          height: 140,
+          colorDark: "#111111",
+          colorLight: "#FFFFFF",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+    }
 
     async function fetchAdminData() {
       try {
@@ -161,10 +533,10 @@
         if (statsRes.success) {
           const s = statsRes.stats;
           document.getElementById('statTotalRegs').textContent = s.totalRegistrations;
-          document.getElementById('statConfirmedRegs').textContent = `${s.confirmedRegistrations} Confirmed`;
-          document.getElementById('statTotalRevenue').textContent = `₹${s.totalRevenue.toLocaleString()}`;
+          document.getElementById('statConfirmedRegs').textContent = `${s.confirmedRegs || s.confirmedRegistrations} Confirmed`;
+          document.getElementById('statTotalRevenue').textContent = `₹${(s.totalRevenue || 0).toLocaleString()}`;
           document.getElementById('statTotalCheckins').textContent = s.totalCheckins;
-          document.getElementById('statPendingRegs').textContent = s.pendingRegistrations;
+          document.getElementById('statPendingRegs').textContent = s.pendingRegs || s.pendingRegistrations;
         }
 
         if (regsRes.success) {
@@ -188,11 +560,11 @@
           (currentFilter === 'CHECKED_IN' && r.checkin_time);
 
         const matchesSearch = !search ||
-          r.ticket_id.toLowerCase().includes(search) ||
-          r.full_name.toLowerCase().includes(search) ||
-          r.email.toLowerCase().includes(search) ||
-          r.college.toLowerCase().includes(search) ||
-          r.event_name.toLowerCase().includes(search);
+          (r.ticket_id && r.ticket_id.toLowerCase().includes(search)) ||
+          (r.full_name && r.full_name.toLowerCase().includes(search)) ||
+          (r.email && r.email.toLowerCase().includes(search)) ||
+          (r.college && r.college.toLowerCase().includes(search)) ||
+          (r.event_name && r.event_name.toLowerCase().includes(search));
 
         return matchesFilter && matchesSearch;
       });
@@ -218,7 +590,7 @@
           <td class="p-3 border-r uppercase text-gray-700 truncate max-w-[160px]">${r.college}</td>
           <td class="p-3 border-r">
             <div class="font-bold uppercase text-[11px]">${r.event_name}</div>
-            <div class="text-[10px] text-gray-500">${r.role} (${r.track.toUpperCase()})</div>
+            <div class="text-[10px] text-gray-500">${r.role} (${(r.track || '').toUpperCase()})</div>
           </td>
           <td class="p-3 border-r font-bold">₹${r.amount}</td>
           <td class="p-3 border-r">
@@ -253,12 +625,12 @@
       const headers = ['Ticket ID', 'Full Name', 'Email', 'Phone', 'College', 'Track', 'Event Name', 'Role', 'Team Name', 'Amount (INR)', 'Payment Status', 'Registration Status', 'Checkin Time', 'Registered At'];
       const rows = allRegistrations.map(r => [
         r.ticket_id,
-        `"${r.full_name.replace(/"/g, '""')}"`,
+        `"${(r.full_name || '').replace(/"/g, '""')}"`,
         r.email,
         r.phone,
-        `"${r.college.replace(/"/g, '""')}"`,
+        `"${(r.college || '').replace(/"/g, '""')}"`,
         r.track,
-        `"${r.event_name.replace(/"/g, '""')}"`,
+        `"${(r.event_name || '').replace(/"/g, '""')}"`,
         r.role,
         `"${(r.team_name || '').replace(/"/g, '""')}"`,
         r.amount,
@@ -272,7 +644,7 @@
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `SYNAPSE_2027_REGISTRATIONS_${new Date().toISOString().slice(0,10)}.csv`);
+      link.setAttribute('download', `SYNAPSE_27_REGISTRATIONS_${new Date().toISOString().slice(0,10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

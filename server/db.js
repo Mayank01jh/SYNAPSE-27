@@ -87,6 +87,11 @@ if (!useFallback && db) {
       CREATE INDEX IF NOT EXISTS idx_reg_email ON registrations(email);
       CREATE INDEX IF NOT EXISTS idx_pay_ticket ON payments(ticket_id);
       CREATE INDEX IF NOT EXISTS idx_checkin_ticket ON checkins(ticket_id);
+
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      );
     `);
   } catch (schemaErr) {
     console.error('[DB] Schema init failed, falling back to memory engine:', schemaErr.message);
@@ -503,6 +508,85 @@ function getAllRegistrations() {
     });
 }
 
+// 8. Dynamic Settings & Price/Payment Options
+const DEFAULT_SETTINGS = {
+  defaultFee: 350,
+  eventFees: {
+    "hackathon-6h": 350,
+    "prompt-wars": 350,
+    "ctf-cyber": 350,
+    "uiux-design": 350,
+    "tech-quiz": 350,
+    "tech-expo": 350,
+    "treasure-hunt": 350,
+    "workshops": 0,
+    "tech-pictionary": 150,
+    "innovation-pitching": 350,
+    "logo-quiz": 150,
+    "jam-session": 100,
+    "general-fest-pass": 350
+  },
+  paymentMethods: {
+    upi: true,
+    card: true,
+    netbanking: true,
+    cash: true
+  },
+  upiId: "verve.iilm@upi",
+  payeeName: "VERVE Club IILM University",
+  qrCodeNote: "SYNAPSE '27 Registration Fee",
+  allowRegistrations: true
+};
+
+function getSettings() {
+  if (!useFallback && db) {
+    try {
+      const row = db.prepare(`SELECT value FROM settings WHERE key = 'app_config'`).get();
+      if (row && row.value) {
+        return { ...DEFAULT_SETTINGS, ...JSON.parse(row.value) };
+      }
+    } catch (e) {}
+    return { ...DEFAULT_SETTINGS };
+  }
+
+  // Fallback
+  if (fallbackStore.settings) {
+    return { ...DEFAULT_SETTINGS, ...fallbackStore.settings };
+  }
+  return { ...DEFAULT_SETTINGS };
+}
+
+function updateSettings(newSettings) {
+  const current = getSettings();
+  const merged = {
+    ...current,
+    ...newSettings,
+    eventFees: {
+      ...current.eventFees,
+      ...(newSettings.eventFees || {})
+    },
+    paymentMethods: {
+      ...current.paymentMethods,
+      ...(newSettings.paymentMethods || {})
+    }
+  };
+
+  if (!useFallback && db) {
+    try {
+      db.prepare(`
+        INSERT INTO settings (key, value) VALUES ('app_config', ?)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value
+      `).run(JSON.stringify(merged));
+    } catch (e) {
+      console.warn('[DB] Failed to save settings to SQLite:', e.message);
+    }
+  }
+
+  fallbackStore.settings = merged;
+  saveFallbackStore();
+  return merged;
+}
+
 module.exports = {
   createRegistration,
   confirmPayment,
@@ -510,5 +594,7 @@ module.exports = {
   verifyTicket,
   recordCheckin,
   getAdminStats,
-  getAllRegistrations
+  getAllRegistrations,
+  getSettings,
+  updateSettings
 };
