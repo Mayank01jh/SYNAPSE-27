@@ -416,15 +416,19 @@ app.use((err, req, res, next) => {
 // START SERVER
 // ═══════════════════════════════════════════════════
 
-app.listen(PORT, async () => {
-  console.log(`\n======================================================`);
-  console.log(`⚡ SYNAPSE 2027 Server live on http://localhost:${PORT}`);
-  console.log(`⚡ Initiated by: VERVE Club, IILM University Gurugram`);
-  console.log(`⚡ Created by: Site by Mayank`);
-  console.log(`⚡ Mode: ${IS_PROD ? 'PRODUCTION' : 'DEVELOPMENT'}`);
-  console.log(`⚡ Verification Portal: http://localhost:${PORT}/verify.html`);
-  console.log(`⚡ Organizer Admin:    http://localhost:${PORT}/admin.html`);
-  console.log(`======================================================\n`);
+if (require.main === module) {
+  app.listen(PORT, async () => {
+    console.log(`\n======================================================`);
+    console.log(`⚡ SYNAPSE 2027 Server live on http://localhost:${PORT}`);
+    console.log(`⚡ Initiated by: VERVE Club, IILM University Gurugram`);
+    console.log(`⚡ Created by: Site by Mayank`);
+    console.log(`⚡ Mode: ${IS_PROD ? 'PRODUCTION' : 'DEVELOPMENT'}`);
+    console.log(`⚡ Verification Portal: http://localhost:${PORT}/verify.html`);
+    console.log(`⚡ Organizer Admin:    http://localhost:${PORT}/admin.html`);
+    console.log(`======================================================\n`);
 
-  await email.initTransporter();
-});
+    await email.initTransporter();
+  });
+}
+
+module.exports = app;

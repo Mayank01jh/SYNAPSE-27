@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/stitch/(.*)", "destination": "/stitch_tech_fest_2027_website_ui/$1" },
+    { "source": "/", "destination": "/public/index.html" },
+    { "source": "/verify.html", "destination": "/public/verify.html" },
+    { "source": "/admin.html", "destination": "/public/admin.html" },
+    { "source": "/css/(.*)", "destination": "/public/css/$1" },
+    { "source": "/js/(.*)", "destination": "/public/js/$1" },
+    { "source": "/images/(.*)", "destination": "/public/images/$1" },
+    { "source": "/(.*)", "destination": "/api/index.js" }
+  ]
+}

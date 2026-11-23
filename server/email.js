@@ -276,7 +276,11 @@ function buildEmailTemplate(ticket, qrDataUrl, hostUrl) {
 // Send Ticket Email
 async function sendTicketEmail(ticket, hostUrl = 'http://localhost:3000') {
   if (!transporter) {
-    await initTransporter();
+    try {
+      await initTransporter();
+    } catch (e) {
+      console.warn('[EMAIL] Auto-init failed:', e.message);
+    }
   }
 
   const qrDataUrl = await generateQRCode(ticket.ticket_id, hostUrl);
