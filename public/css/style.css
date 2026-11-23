@@ -154,3 +154,25 @@ body {
 .pulse-glow {
   animation: pulseGlow 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* ═══════════════════════════════════════════════════
+   GUARANTEED CONTRAST RULES (Prevents black-on-black / invisible text)
+   ═══════════════════════════════════════════════════ */
+.track-filter-btn.active,
+.schedule-day-btn.active,
+.admin-tab-btn.active,
+.admin-nav-tab.active,
+[data-active="true"] {
+  background-color: #111111 !important;
+  color: #FFFFFF !important;
+}
+
+.track-filter-btn:not(.active),
+.schedule-day-btn:not(.active),
+.admin-tab-btn:not(.active),
+.admin-nav-tab:not(.active),
+[data-active="false"] {
+  background-color: #FFFFFF !important;
+  color: #111111 !important;
+}
+

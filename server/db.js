@@ -3,33 +3,38 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 
-// Determine database file location
+// Determine database file location & execution environment
 const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
-let dbPath = isServerless ? path.join(os.tmpdir(), 'synapse.db') : path.join(__dirname, '..', 'synapse.db');
+let dbPath = path.join(__dirname, '..', 'synapse.db');
 
 // Safe loader for SQLite DatabaseSync
 let DatabaseSync = null;
 let db = null;
-let useFallback = false;
+let useFallback = isServerless; // In Vercel / serverless environment, use resilient pure-JS engine to prevent native crashes
 
-try {
-  ({ DatabaseSync } = require('node:sqlite'));
-  if (DatabaseSync) {
-    try {
-      db = new DatabaseSync(dbPath);
-      // Test write capability
-      db.exec(`PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;`);
-    } catch (fsErr) {
-      // If project root was read-only, try /tmp
-      dbPath = path.join(os.tmpdir(), 'synapse.db');
-      db = new DatabaseSync(dbPath);
-      db.exec(`PRAGMA foreign_keys = ON;`);
+if (!isServerless) {
+  try {
+    ({ DatabaseSync } = require('node:sqlite'));
+    if (DatabaseSync) {
+      try {
+        db = new DatabaseSync(dbPath);
+        db.exec(`PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;`);
+      } catch (fsErr) {
+        dbPath = path.join(os.tmpdir(), 'synapse.db');
+        try {
+          db = new DatabaseSync(dbPath);
+          db.exec(`PRAGMA foreign_keys = ON;`);
+        } catch (tmpErr) {
+          useFallback = true;
+          db = null;
+        }
+      }
     }
+  } catch (err) {
+    console.warn('[DB] Native node:sqlite not available. Activating resilient in-memory storage engine.');
+    useFallback = true;
+    db = null;
   }
-} catch (err) {
-  console.warn('[DB] Native node:sqlite not available or failed to load. Activating resilient in-memory storage engine.');
-  useFallback = true;
-  db = null;
 }
 
 if (!db) {
@@ -587,6 +592,26 @@ function updateSettings(newSettings) {
   return merged;
 }
 
+function clearAllRegistrations() {
+  if (!useFallback && db) {
+    try {
+      db.exec(`
+        DELETE FROM checkins;
+        DELETE FROM payments;
+        DELETE FROM registrations;
+      `);
+    } catch (e) {
+      console.warn('[DB] Clear registrations error:', e.message);
+    }
+  }
+
+  fallbackStore.registrations = [];
+  fallbackStore.payments = [];
+  fallbackStore.checkins = [];
+  saveFallbackStore();
+  return { success: true, message: 'All registration and test data cleared.' };
+}
+
 module.exports = {
   createRegistration,
   confirmPayment,
@@ -596,5 +621,6 @@ module.exports = {
   getAdminStats,
   getAllRegistrations,
   getSettings,
-  updateSettings
+  updateSettings,
+  clearAllRegistrations
 };

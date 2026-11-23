@@ -160,11 +160,15 @@ function initTracksAndEvents() {
   filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       filterButtons.forEach(b => {
-        b.classList.remove('bg-[#111111]', 'text-white');
+        b.classList.remove('bg-[#111111]', 'text-white', 'active');
         b.classList.add('bg-white', 'text-[#111111]');
+        b.style.backgroundColor = '#FFFFFF';
+        b.style.color = '#111111';
       });
       btn.classList.remove('bg-white', 'text-[#111111]');
-      btn.classList.add('bg-[#111111]', 'text-white');
+      btn.classList.add('bg-[#111111]', 'text-white', 'active');
+      btn.style.backgroundColor = '#111111';
+      btn.style.color = '#FFFFFF';
 
       currentTrackFilter = btn.dataset.track;
       renderEvents();
@@ -323,11 +327,15 @@ function initSchedule() {
   scheduleDayBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       scheduleDayBtns.forEach(b => {
-        b.classList.remove('bg-[#111111]', 'text-white');
+        b.classList.remove('bg-[#111111]', 'text-white', 'active');
         b.classList.add('bg-white', 'text-[#111111]');
+        b.style.backgroundColor = '#FFFFFF';
+        b.style.color = '#111111';
       });
       btn.classList.remove('bg-white', 'text-[#111111]');
-      btn.classList.add('bg-[#111111]', 'text-white');
+      btn.classList.add('bg-[#111111]', 'text-white', 'active');
+      btn.style.backgroundColor = '#111111';
+      btn.style.color = '#FFFFFF';
       activeDay = btn.dataset.day;
       renderSchedule();
     });

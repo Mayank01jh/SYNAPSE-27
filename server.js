@@ -4,7 +4,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('node:path');
+const fs = require('node:fs');
 const crypto = require('node:crypto');
+const qrcode = require('qrcode');
 const db = require('./server/db');
 const email = require('./server/email');
 
@@ -183,6 +185,39 @@ app.post('/api/admin/settings', adminLimiter, (req, res) => {
   } catch (err) {
     console.error('[API /admin/settings POST] Error:', err);
     res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
+
+// Admin Clear Test Registrations
+app.post('/api/admin/clear-data', adminLimiter, (req, res) => {
+  try {
+    const result = db.clearAllRegistrations();
+    res.json(result);
+  } catch (err) {
+    console.error('[API /admin/clear-data] Error:', err);
+    res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
+
+// Dynamic QR Code Generator endpoint (replaces client-side cdnjs qrcode)
+app.get('/api/qr', async (req, res) => {
+  try {
+    const text = req.query.text || 'https://synapse2027.iilm.edu';
+    const dataUrl = await qrcode.toDataURL(text, {
+      width: 200,
+      margin: 1,
+      color: { dark: '#111111', light: '#FFFFFF' }
+    });
+    const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+    const img = Buffer.from(base64Data, 'base64');
+    res.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Content-Length': img.length,
+      'Cache-Control': 'public, max-age=3600'
+    });
+    res.end(img);
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to generate QR.' });
   }
 });
 
@@ -426,12 +461,17 @@ app.get('/api/admin/registrations', adminLimiter, (req, res) => {
 // 404 & ERROR HANDLING
 // ═══════════════════════════════════════════════════
 
-// Fallback to index.html for client-side navigation (but not for /api/ routes)
+// Fallback for client-side navigation (API routes return 404 JSON, static files fall back safely)
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ success: false, error: 'API endpoint not found.' });
   }
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  // When running inside serverless lambdas where public/ is hosted at CDN edge
+  res.status(200).send(`<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=/"></head><body>Redirecting to SYNAPSE '27...</body></html>`);
 });
 
 // Global error handler (prevents stack trace leaks and preserves HTTP status)
